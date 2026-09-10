@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# 运行期产物（workflow-json 默认输出、下载的结果文件）
+workflow-*.api.json
+*_0.png
+*_0.jpg
+*_0.mp4
+
+# 本地密钥配置（切勿提交）
+.env
+*.key
