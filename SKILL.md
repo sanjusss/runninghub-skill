@@ -46,6 +46,12 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --host <www.runninghub.cn|
 | 上传图片/音频/视频/zip | `rh.py upload <file>` |
 | 上传 LoRA | `rh.py upload-lora <file.safetensors>` |
 | 查公共 ComfyUI 模型 | `rh.py resources --type CHECKPOINT --kw flux` |
+| 在 `Civitai` 搜 `LoRA` | `rh.py civitai-search <关键词> --base IL-XL` |
+| 看 `Civitai` 模型/版本详情 | `rh.py civitai-info <modelId或versionId> [--model\|--version]` |
+| 从 `Civitai` 下载 `LoRA` | `rh.py civitai-download <versionId>` |
+| 同步 `Civitai` `LoRA` 到平台 | `rh.py lora-sync <versionId>`（幂等，命中清单直接复用） |
+| 一次搜公共库 + `Civitai` | `rh.py lora-find <关键词> --base IL-XL` |
+| 查本地 `LoRA` 同步清单 | `rh.py lora-list` |
 | webhook 调试 | `rh.py webhook-detail <taskId>` / `rh.py webhook-retry <webhookId>` |
 | 下载结果文件 | `rh.py download <url> -o out.png` |
 
@@ -71,6 +77,7 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --host <www.runninghub.cn|
 | 跑 AI 应用（webapp） | `references/ai-apps.md` |
 | 文/图/音/视频/3D 标准模型 | `references/model-api.md` |
 | 上传输入素材或 LoRA | `references/uploads.md` |
+| 在 `Civitai` 找 `LoRA` 并同步到平台 | `references/civitai-lora-sync.md` |
 | 任务状态含义、轮询策略、webhook 回调 | `references/task-lifecycle.md` |
 | 余额、Key 类型、权限、并发 | `references/account-and-keys.md` |
 | 报错排查 | `references/errors.md` |
@@ -84,6 +91,7 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --host <www.runninghub.cn|
 3. **v1 查询接口的语义陷阱**：`/task/openapi/outputs` 在任务运行中会返回 `code:804`、排队中返回 `813`——这不是失败，是状态信号。优先用 v2 `task-query`。
 4. **seed 会被强制随机**：API 调用会重置 seed，需要固定 seed 就必须写进 nodeInfoList。
 5. **图片识别**：需要检查图片时，按 `references/image-analysis.md` 使用当前环境已有的图片查看能力。不要假定环境允许创建子代理。若要通过 RunningHub API 识别图片，先用 `rh.py models --task image-to-text` 确认可用端点。
+6. **`CIVITAI_API_KEY`（可选，仅下载需要）**：`Civitai` 搜索与详情匿名可用；`civitai-download` / `lora-sync` 大多需要它（多数模型要求登录后下载）。Key 只从环境变量读取，同 `RUNNINGHUB_API_KEY` 的约定。完整流程见 `references/civitai-lora-sync.md`。
 
 ## 数据维护
 

@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "source": "RunningHub 前端底模枚举（POST https://{www.runninghub.cn,www.runninghub.ai}/api/resource/baseModels，2026-09-12 实测两站各 46 值且一致）映射到 Civitai baseModel 取值",
+    "usage": "allow 是该 RunningHub 底模可用的 Civitai baseModel 集合（本地大小写不敏感匹配）；weight 是血统系数，用于候选排序，省略时默认 1.0；allow 为空数组表示 Civitai 上没有兼容 LoRA",
+    "matching": "匹配规则见 references/civitai-lora-sync.md"
+  },
+  "SD 1.4": {"allow": ["SD 1.4"]},
+  "SD 1.5": {"allow": ["SD 1.5"]},
+  "SD 1.5 LCM": {"allow": ["SD 1.5 LCM", "SD 1.5"]},
+  "SD 2.0": {"allow": ["SD 2.0", "SD 2.0 768"]},
+  "SD 2.1": {"allow": ["SD 2.1", "SD 2.1 768", "SD 2.1 Unclip"]},
+  "SD 3.0": {"allow": ["SD 3"]},
+  "SD3.5": {"allow": ["SD 3.5", "SD 3.5 Large", "SD 3.5 Large Turbo", "SD 3.5 Medium"]},
+  "SDXL 1.0": {
+    "allow": ["SDXL 1.0", "SDXL 0.9", "Illustrious", "NoobAI", "Pony"],
+    "weight": {"SDXL 1.0": 1.0, "SDXL 0.9": 1.0, "Illustrious": 0.5, "NoobAI": 0.5, "Pony": 0.2},
+    "note": "跨血统能加载但效果劣化"
+  },
+  "SDXL 1.0 LCM": {"allow": ["SDXL 1.0 LCM", "SDXL 1.0"]},
+  "SDXL Turbo": {"allow": ["SDXL Turbo", "SDXL Distilled"]},
+  "SDXL Lighting": {"allow": ["SDXL Lightning"], "note": "RunningHub 枚举拼写无 n，对应 Civitai 的 SDXL Lightning"},
+  "Pony-XL": {"allow": ["Pony"], "note": "Pony V7 是 AuraFlow 架构，与 Pony V6 XL 不通用"},
+  "IL-XL": {
+    "allow": ["Illustrious", "NoobAI", "SDXL 1.0", "Pony"],
+    "weight": {"Illustrious": 1.0, "NoobAI": 0.8, "SDXL 1.0": 0.5, "Pony": 0.2}
+  },
+  "NoobAI-XL": {
+    "allow": ["NoobAI", "Illustrious", "SDXL 1.0"],
+    "weight": {"NoobAI": 1.0, "Illustrious": 0.8, "SDXL 1.0": 0.5}
+  },
+  "F1基础 S": {
+    "allow": ["Flux.1 S", "Flux.1 D"],
+    "weight": {"Flux.1 S": 1.0, "Flux.1 D": 0.6}
+  },
+  "F1基础 D": {
+    "allow": ["Flux.1 D", "Flux.1 S"],
+    "weight": {"Flux.1 D": 1.0, "Flux.1 S": 0.6}
+  },
+  "F1基础-Krea": {"allow": ["Flux.1 Krea"]},
+  "F1基础-Kontext": {"allow": ["Flux.1 Kontext"]},
+  "F2基础": {"allow": ["Flux.2 D"]},
+  "Flux2-Klein-9B": {"allow": ["Flux.2 Klein 9B", "Flux.2 Klein 9B-base"]},
+  "Flux2-Klein-4B": {"allow": ["Flux.2 Klein 4B", "Flux.2 Klein 4B-base"]},
+  "Qwen-image": {"allow": ["Qwen"]},
+  "Qwen-Image-2512": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
+  "Qwen-Edit-2509": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
+  "Qwen-Edit-2511": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
+  "WAN2.1": {
+    "allow": ["Wan Video 1.3B t2v", "Wan Video 14B t2v", "Wan Video 14B i2v 480p", "Wan Video 14B i2v 720p"],
+    "note": "需按 checkpoint 文件名再细分变体"
+  },
+  "WAN2.2": {
+    "allow": ["Wan Video 2.2 TI2V-5B", "Wan Video 2.2 I2V-A14B", "Wan Video 2.2 T2V-A14B"],
+    "note": "A14B 加速 LoRA 高噪低噪成对"
+  },
+  "Hunyuan 1": {"allow": ["Hunyuan 1"]},
+  "HunyuanVideo1.5": {"allow": [], "note": "Civitai 无对应，旧 Hunyuan Video 不兼容 1.5"},
+  "HunyuanImage": {"allow": [], "note": "Civitai 无对应"},
+  "LTX2.3": {"allow": ["LTXV 2.3"]},
+  "Lightricks/LTX-2": {"allow": ["LTXV 2.3"]},
+  "Z-image-turbo": {"allow": ["ZImageTurbo"]},
+  "Z-image-base": {"allow": ["ZImageBase"]},
+  "anima": {"allow": ["Anima"]},
+  "krea2": {"allow": ["Krea 2"]},
+  "boogu": {"allow": ["Boogu"]},
+  "ideogram4": {"allow": ["Ideogram 4.0"]},
+  "minimax-h3": {"allow": ["MiniMax H3"]},
+  "ERINE": {"allow": ["Ernie"]},
+  "Kolors": {"allow": ["Kolors"]},
+  "Stable Cascade": {"allow": ["Stable Cascade"]},
+  "SVD": {"allow": ["SVD"]},
+  "SVD XT": {"allow": ["SVD XT"]},
+  "Other": {"allow": ["Other"]},
+  "voxcpm": {"allow": [], "note": "音频模型，无 LoRA"}
+}

@@ -10,6 +10,7 @@ Coverage
   AI apps    : run, fetch API call demo (nodeInfoList template)
   Models     : search registry, show params, run any 标准模型 API endpoint
   Uploads    : media (v2 binary), LoRA (md5 + presigned PUT)
+  Civitai    : LoRA search/info/download, one-shot find, sync to RunningHub
   Webhooks   : event detail, retry
 
 API key resolution: $RUNNINGHUB_API_KEY
@@ -22,7 +23,9 @@ Full endpoint docs: references/ in the skill directory.
 from __future__ import annotations
 
 import argparse
+import datetime
 import hashlib
+import http.client
 import json
 import mimetypes
 import os
@@ -37,6 +40,7 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 REGISTRY_PATH = SCRIPT_DIR.parent / "data" / "models.json"
+BASEMODEL_MAP_PATH = SCRIPT_DIR.parent / "data" / "basemodel_map.json"
 
 DEFAULT_HOST = "www.runninghub.cn"
 ALLOWED_HOSTS = {"www.runninghub.cn", "www.runninghub.ai"}
@@ -45,6 +49,23 @@ POLL_INTERVAL = 3.0
 QUERY_RETRIES = 3
 SAFE_COMPONENT_RE = re.compile(r"^[A-Za-z0-9_-]+$")
 SAFE_EXTENSION_RE = re.compile(r"^\.[A-Za-z0-9]{1,10}$")
+
+CIVITAI_HOST = "civitai.com"
+# Cloudflare 403s the default urllib UA — every civitai.com request needs a browser UA.
+CIVITAI_UA = ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+              "(KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36")
+CIVITAI_PROXY_HINT = ("中国大陆访问 Civitai 通常需要代理，"
+                      "可设置 HTTPS_PROXY 环境变量")
+CIVITAI_LINK_RE = re.compile(
+    r"civitai\.com/models/(\d+)(?:/[^\s\"'?<>#&]*)?"
+    r"(?:[?#&][^\s\"'<>]*?modelVersionId=(\d+))?", re.IGNORECASE)
+# Model types whose files RHLoraLoader can load (checkpoint/embedding/etc. cannot).
+CIVITAI_LORA_TYPES = {"LORA", "LoCon", "DoRA"}
+CIVITAI_SORTS = ["Highest Rated", "Most Downloaded", "Newest", "Most Liked",
+                 "Most Discussed", "Most Collected", "Most Images",
+                 "Highest Weighted", "Random"]
+CIVITAI_RETRY_CAP = 5        # retries per request on 429/5xx/network errors
+CIVITAI_BACKOFF_MAX = 30.0   # seconds between retries
 
 
 # ---------------------------------------------------------------------------
@@ -223,6 +244,14 @@ def file_chunks(path: Path, *, prefix: bytes = b"", suffix: bytes = b""):
 
 def file_md5(path: Path) -> str:
     digest = hashlib.md5()
+    with path.open("rb") as f:
+        while chunk := f.read(1 << 20):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
     with path.open("rb") as f:
         while chunk := f.read(1 << 20):
             digest.update(chunk)
@@ -439,6 +468,599 @@ def registry_matches(reg: dict, kw: str | None, task: str | None) -> list[dict]:
             return all(k in hay for k in kws)
         hits = [e for e in hits if hit(e)]
     return hits
+
+
+# ---------------------------------------------------------------------------
+# Civitai LoRA pipeline: search / info / download / sync / manifest
+# ---------------------------------------------------------------------------
+
+def civitai_key(required: bool) -> str:
+    key = os.environ.get("CIVITAI_API_KEY", "").strip()
+    if not key and required:
+        print("No Civitai API key. Export CIVITAI_API_KEY. "
+              "Create one on civitai.com under user settings → API Keys.",
+              file=sys.stderr)
+        sys.exit(2)
+    return key
+
+
+def retry_wait(base_delay: float, headers) -> float:
+    """Backoff delay for 429/5xx: Retry-After header (capped) when present."""
+    retry_after = headers.get("Retry-After") if headers else None
+    if retry_after:
+        try:
+            return min(float(retry_after), CIVITAI_BACKOFF_MAX)
+        except ValueError:
+            pass
+    return base_delay
+
+
+def civitai_request(path: str, params: dict | None = None, *, token: str = "") -> dict:
+    """GET https://civitai.com/api/v1/... as JSON.
+
+    Browser UA (Cloudflare 403s the urllib default); Bearer header only when a
+    key exists (skips the edge cache); exponential backoff 1s→30s on
+    429/5xx/network errors (Retry-After honored, capped), max CIVITAI_RETRY_CAP retries.
+    """
+    qs = urllib.parse.urlencode({k: v for k, v in (params or {}).items() if v is not None})
+    url = f"https://{CIVITAI_HOST}{path}"
+    if qs:
+        url = f"{url}?{qs}"
+    headers = {"User-Agent": CIVITAI_UA, "Accept": "application/json"}
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    delay = 1.0
+    status, text, resp_headers = 0, "", None
+    for attempt in range(CIVITAI_RETRY_CAP + 1):
+        final = attempt >= CIVITAI_RETRY_CAP
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=headers),
+                                        timeout=60) as resp:
+                status = getattr(resp, "status", 200)
+                text = resp.read().decode("utf-8", "replace")
+        except urllib.error.HTTPError as e:
+            status = e.code
+            text = e.read().decode("utf-8", "replace")
+            resp_headers = e.headers
+        except urllib.error.URLError as e:
+            if final:
+                raise ApiError(f"cannot reach civitai.com: {e.reason}; {CIVITAI_PROXY_HINT}",
+                               retryable=True) from e
+            time.sleep(delay)
+            delay = min(delay * 2, CIVITAI_BACKOFF_MAX)
+            continue
+        if status < 400:
+            break
+        if (status == 429 or status >= 500) and not final:
+            time.sleep(retry_wait(delay, resp_headers))
+            delay = min(delay * 2, CIVITAI_BACKOFF_MAX)
+            continue
+        break  # non-retryable error → report below
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        raise ApiError(f"non-JSON response from civitai.com{path} (HTTP {status}): "
+                       f"{text[:200]}", status=status) from None
+    if status >= 400:
+        message = (parsed.get("error") or parsed.get("message")
+                   if isinstance(parsed, dict) else None)
+        raise ApiError(f"civitai.com{path} HTTP {status}: {message or display_url(url)}",
+                       status=status, raw=parsed if isinstance(parsed, dict) else None,
+                       retryable=status == 429 or status >= 500)
+    return parsed
+
+
+def load_basemodel_map() -> dict:
+    try:
+        raw = json.loads(BASEMODEL_MAP_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"cannot read {BASEMODEL_MAP_PATH}: {exc}", file=sys.stderr)
+        sys.exit(2)
+    return {k: v for k, v in raw.items() if not k.startswith("_")}
+
+
+def civitai_allow(base: str) -> list[str]:
+    """Civitai baseModel strings allowed for a RunningHub base-model name."""
+    mapping = load_basemodel_map()
+    entry = mapping.get(base)
+    if not isinstance(entry, dict):
+        names = ", ".join(sorted(mapping))
+        print(f'unknown --base "{base}" — pick one of: {names}', file=sys.stderr)
+        sys.exit(2)
+    return list(entry.get("allow") or [])
+
+
+def base_model_allowed(value, allowed: list[str]) -> bool:
+    if not allowed:
+        return False  # empty allow set (e.g. HunyuanVideo1.5): nothing on civitai matches
+    return str(value or "").strip().lower() in {a.strip().lower() for a in allowed}
+
+
+def lora_home() -> Path:
+    home = os.environ.get("RH_LORA_HOME", "").strip()
+    return Path(home).expanduser() if home else Path.home() / ".runninghub" / "loras"
+
+
+def load_manifest() -> dict:
+    path = lora_home() / "manifest.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {"loras": []}
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"LoRA manifest is damaged ({exc}); continuing with an empty manifest — "
+              f"restore {path} before the next sync or the history is overwritten",
+              file=sys.stderr)
+        return {"loras": []}
+    if isinstance(data, dict) and isinstance(data.get("loras"), list):
+        return data
+    return {"loras": []}
+
+
+def save_manifest(manifest: dict) -> None:
+    home = lora_home()
+    home.mkdir(parents=True, exist_ok=True)
+    tmp = home / f".manifest.json.{os.getpid()}.tmp"
+    tmp.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    os.replace(tmp, home / "manifest.json")
+
+
+def manifest_entry(manifest: dict, version_id) -> dict | None:
+    return next((e for e in manifest["loras"]
+                 if str(e.get("versionId")) == str(version_id)), None)
+
+
+def upsert_manifest(manifest: dict, entry: dict) -> None:
+    existing = manifest_entry(manifest, entry.get("versionId"))
+    if existing is not None:
+        existing.update(entry)
+    else:
+        manifest["loras"].append(entry)
+    save_manifest(manifest)
+
+
+def license_fields(model: dict) -> dict:
+    return {k: model.get(k) for k in
+            ("allowNoCredit", "allowCommercialUse", "allowDerivatives",
+             "allowDifferentLicense", "allowSellImage")}
+
+
+def tag_names(tags) -> list[str]:
+    """Civitai tags come back as [{name:...}] or plain strings, depending on endpoint."""
+    names = []
+    for t in tags or []:
+        name = t.get("name") if isinstance(t, dict) else t
+        if isinstance(name, str) and name and name not in names:
+            names.append(name)
+    return names
+
+
+def pick_primary_file(files: list | None) -> dict | None:
+    files = files or []
+    primary = [f for f in files if f.get("primary")]
+    safetensors = [f for f in primary
+                   if (f.get("metadata") or {}).get("format") == "SafeTensor"]
+    return (safetensors or primary or files or [None])[0]
+
+
+def is_safetensor_file(f: dict) -> bool:
+    """SafeTensor by declared format, with the file extension as a fallback."""
+    fmt = str(((f.get("metadata") or {}).get("format") or "")).lower()
+    return fmt == "safetensor" or str(f.get("name") or "").lower().endswith(".safetensors")
+
+
+def summarize_civitai_model(model: dict, allowed: list[str]) -> dict | None:
+    """One search row per model: the first version matching the allow set."""
+    versions = model.get("modelVersions") or []
+    if allowed is not None:
+        version = next((v for v in versions
+                        if base_model_allowed(v.get("baseModel"), allowed)), None)
+    else:
+        version = versions[0] if versions else None
+    if not version:
+        return None
+    stats = model.get("stats") or {}
+    file = pick_primary_file(version.get("files"))
+    primary_file = None
+    if file:
+        primary_file = {"fileId": file.get("id"), "fileName": file.get("name"),
+                        "sizeKB": file.get("sizeKB"),
+                        "format": (file.get("metadata") or {}).get("format")}
+    return {
+        "modelId": model.get("id"),
+        "name": model.get("name"),
+        "versionId": version.get("id"),
+        "versionName": version.get("name"),
+        "baseModel": version.get("baseModel"),
+        "trainedWords": version.get("trainedWords") or [],
+        "tags": tag_names(model.get("tags"))[:10],
+        "downloadCount": stats.get("downloadCount"),
+        "thumbsUpCount": stats.get("thumbsUpCount"),
+        "nsfw": model.get("nsfw"),
+        "license": license_fields(model),
+        "primaryFile": primary_file,
+    }
+
+
+def civitai_search(query: str, *, allowed: list[str] | None = None, base: str | None = None,
+                   sort: str | None = None, period: str | None = None,
+                   limit: int = 20, nsfw: bool = False) -> list[dict]:
+    """Search LoRA models, locally filtering modelVersions[].baseModel.
+
+    Cursor pagination only (page+cursor together 400 on /models); pages may
+    come back under-filled because baseModel filtering happens here, so the
+    loop stops on "collected enough" or "no nextCursor" — never on "full page".
+    """
+    if allowed is not None and not allowed:
+        print(f'--base "{base}": this RunningHub base model has no compatible LoRA '
+              "family on civitai.com (empty allow set in data/basemodel_map.json); "
+              "skipping the civitai search", file=sys.stderr)
+        return []
+    token = civitai_key(required=False)
+    page_size = max(1, min(100, limit))
+    results: list[dict] = []
+    cursor = None
+    for _ in range(50):
+        params = {"query": query, "types": "LORA", "limit": page_size}
+        if sort:
+            params["sort"] = sort
+        if period:
+            params["period"] = period
+        if nsfw:
+            params["nsfw"] = "true"
+        if cursor:
+            params["cursor"] = cursor
+        page = civitai_request("/api/v1/models", params, token=token)
+        for model in page.get("items") or []:
+            row = summarize_civitai_model(model, allowed)
+            if row:
+                results.append(row)
+                if len(results) >= limit:
+                    return results
+        cursor = (page.get("metadata") or {}).get("nextCursor")
+        if not cursor:
+            break
+    return results
+
+
+def civitai_mini(version_id, token: str) -> dict | None:
+    try:
+        return civitai_request(f"/api/v1/model-versions/mini/{version_id}", token=token)
+    except ApiError as exc:
+        if exc.status == 404:
+            return None
+        raise
+
+
+def summarize_civitai_version(version: dict, mini: dict | None) -> dict:
+    out = {
+        "versionId": version.get("id"),
+        "name": version.get("name"),
+        "baseModel": version.get("baseModel"),
+        "publishedAt": version.get("publishedAt"),
+        "status": version.get("status"),
+        "trainedWords": version.get("trainedWords") or [],
+        "air": version.get("air"),
+        "files": [{
+            "fileId": f.get("id"),
+            "fileName": f.get("name"),
+            "sizeKB": f.get("sizeKB"),
+            "primary": bool(f.get("primary")),
+            "format": (f.get("metadata") or {}).get("format"),
+            "sha256": (f.get("hashes") or {}).get("SHA256"),
+        } for f in version.get("files") or []],
+    }
+    if mini:
+        out["availability"] = mini.get("availability")
+        out["requireAuth"] = mini.get("requireAuth")
+        out["checkPermission"] = mini.get("checkPermission")
+        out["earlyAccessEndsAt"] = mini.get("earlyAccessEndsAt")
+        out["air"] = out.get("air") or mini.get("air")
+    return out
+
+
+def parse_iso_timestamp(value) -> datetime.datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def content_disposition_name(headers) -> str | None:
+    raw = headers.get("Content-Disposition") if headers else None
+    if not raw:
+        return None
+    m = (re.search(r"filename\*=(?:UTF-8|utf-8)''([^;]+)", raw)
+         or re.search(r'filename="([^"]+)"', raw)
+         or re.search(r"filename=([^;]+)", raw))
+    if not m:
+        return None
+    name = urllib.parse.unquote(m.group(1).strip().strip('"'))
+    return os.path.basename(name) or None
+
+
+def safe_filename(name) -> str:
+    name = os.path.basename(str(name or "").strip())
+    name = re.sub(r'[\\/:*?"<>|\x00-\x1f]', "_", name).strip()
+    if not name:
+        return "lora.safetensors"
+    if len(name) > 180:
+        stem, ext = os.path.splitext(name)
+        if len(ext) >= 180:  # pathological: the extension alone exceeds the cap
+            return name[:180]
+        name = stem[:180 - len(ext)] + ext
+    return name
+
+
+def civitai_download_error(e: urllib.error.HTTPError, text: str) -> ApiError:
+    if e.code == 401:
+        return ApiError("civitai.com returned 401 — the download requires an account: "
+                        "export CIVITAI_API_KEY", status=401)
+    if e.code == 403:
+        try:
+            payload = json.loads(text)
+        except json.JSONDecodeError:
+            payload = {}
+        deadline = payload.get("deadline") if isinstance(payload, dict) else None
+        if deadline:
+            return ApiError(f"civitai.com returned 403 — Early Access until {deadline}; "
+                            "wait for the deadline or pick another version",
+                            status=403, raw=payload)
+        return ApiError("civitai.com returned 403 — the file is not downloadable",
+                        status=403, raw=payload)
+    if e.code == 410:
+        return ApiError("civitai.com returned 410 — the version is archived; "
+                        "pick another version", status=410)
+    if e.code == 404:
+        return ApiError("civitai.com returned 404 — no such version/file", status=404)
+    return ApiError(f"civitai.com download HTTP {e.code}: {text[:200]}", status=e.code)
+
+
+def model_id_from_air(air) -> int | None:
+    m = re.search(r"civitai:(\d+)@", str(air or ""))
+    return int(m.group(1)) if m else None
+
+
+def query_param(url: str, name: str) -> str | None:
+    """Single query parameter of a URL (exact key match, no substring pitfalls)."""
+    query = urllib.parse.parse_qsl(urllib.parse.urlsplit(url).query,
+                                   keep_blank_values=True)
+    return next((v for k, v in query if k == name), None)
+
+
+def civitai_download(version_id: int, file_id: int | None, *, token: str) -> dict:
+    """Precheck via /mini, stream to <lora home>/files/{modelId}-{versionId}-{name}
+    with Range resume, verify SHA256, then record the download in the manifest."""
+    mini = civitai_request(f"/api/v1/model-versions/mini/{version_id}", token=token)
+    # /mini lacks modelId/trainedWords/per-file hashes — the full version endpoint
+    # fills the manifest and pins SHA256 to the requested file (mini's top-level
+    # hashes describe the primary file only).
+    try:
+        detail = civitai_request(f"/api/v1/model-versions/{version_id}", token=token)
+    except ApiError:
+        detail = {}
+    early = parse_iso_timestamp(mini.get("earlyAccessEndsAt"))
+    if early is not None and early.tzinfo is None:
+        early = early.replace(tzinfo=datetime.timezone.utc)
+    if early and early > datetime.datetime.now(datetime.timezone.utc):
+        raise ApiError(f"version {version_id} is Early Access until "
+                       f"{early.isoformat()}; pick another version or wait")
+    if mini.get("requireAuth") and not token:
+        civitai_key(required=True)  # prints the export hint and exits 2
+
+    detail_files = detail.get("files") or []
+    model_type = str((detail.get("model") or {}).get("type") or "").strip()
+    if model_type and model_type not in CIVITAI_LORA_TYPES:
+        raise ApiError(f"version {version_id} belongs to a {model_type} model, not a "
+                       f"LoRA (allowed types: {', '.join(sorted(CIVITAI_LORA_TYPES))}); "
+                       "RHLoraLoader cannot load it")
+    safetensors_files = [f for f in detail_files if is_safetensor_file(f)]
+    if file_id:
+        file_entry = next((f for f in detail_files if f.get("id") == file_id), None)
+        if file_entry is None:
+            raise ApiError(f"version {version_id} has no file with id {file_id}; "
+                           f"list them: rh.py civitai-info {version_id}")
+        if not is_safetensor_file(file_entry):
+            raise ApiError(f'file {file_id} ("{file_entry.get("name")}") is not a '
+                           "SafeTensor LoRA file; RHLoraLoader cannot load it")
+        expected = (file_entry.get("hashes") or {}).get("SHA256")
+    elif not safetensors_files:
+        listing = ", ".join(f'{f.get("name")} [{(f.get("metadata") or {}).get("format")}]'
+                            for f in detail_files) or "no files listed"
+        raise ApiError(f"version {version_id} has no SafeTensor file "
+                       f"({listing}); RHLoraLoader cannot load zip/ckpt files")
+    else:
+        file_entry = next((f for f in safetensors_files if f.get("primary")), None)
+        if file_entry is None:
+            file_entry = safetensors_files[0]
+            primary_name = next((f.get("name") for f in detail_files if f.get("primary")),
+                                None)
+            print(f'primary file "{primary_name}" is not SafeTensor; using '
+                  f'"{file_entry.get("name")}" instead', file=sys.stderr)
+        expected = (file_entry.get("hashes") or {}).get("SHA256")
+        if file_entry.get("primary"):
+            expected = expected or (mini.get("hashes") or {}).get("SHA256")
+    if not expected:
+        print("civitai lists no SHA256 for this file; skipping the integrity check",
+              file=sys.stderr)
+
+    # The 307 to the signed CDN URL strips custom headers, so auth must ride
+    # the query string (?token=) instead of the Authorization header.
+    urls = [u for u in (mini.get("downloadUrls") or []) if isinstance(u, str) and u]
+    url = None
+    if urls:
+        if file_id:
+            url = next((u for u in urls if query_param(u, "fileId") == str(file_id)), None)
+        url = url or urls[0]
+    url = urllib.parse.urljoin(f"https://{CIVITAI_HOST}/",
+                               url or f"/api/download/models/{version_id}")
+    parts = urllib.parse.urlsplit(url)
+    query = [(k, v) for k, v in urllib.parse.parse_qsl(parts.query, keep_blank_values=True)
+             if k not in ("fileId", "token")]
+    if file_id:
+        query.append(("fileId", str(file_id)))
+    # The token must never be sent to a host other than civitai.com.
+    netloc = parts.netloc.lower()
+    if netloc == CIVITAI_HOST or netloc.endswith(f".{CIVITAI_HOST}"):
+        if token:
+            query.append(("token", token))
+    elif token:
+        print(f"download URL is not on civitai.com ({parts.netloc}); "
+              "requesting it without the API token", file=sys.stderr)
+    url = parts._replace(query=urllib.parse.urlencode(query)).geturl()
+
+    model_id = detail.get("modelId") or model_id_from_air(mini.get("air"))
+    model_tag = model_id or "model"
+    files_dir = lora_home() / "files"
+    files_dir.mkdir(parents=True, exist_ok=True)
+    part_id = file_id or (file_entry or {}).get("id")
+    part = (files_dir / f"{model_tag}-{version_id}-{part_id}.part" if part_id is not None
+            else files_dir / f"{model_tag}-{version_id}.part")
+    final_name = None
+    delay = 1.0
+    for attempt in range(CIVITAI_RETRY_CAP + 1):
+        final = attempt >= CIVITAI_RETRY_CAP
+        offset = part.stat().st_size if part.exists() else 0
+        headers = {"User-Agent": CIVITAI_UA}
+        if offset:
+            headers["Range"] = f"bytes={offset}-"
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                status = getattr(resp, "status", 200)
+                if status == 206:
+                    mode = "ab"  # resume accepted
+                else:
+                    mode, offset = "wb", 0  # server ignored Range → start over
+                final_name = content_disposition_name(resp.headers) or final_name
+                length = resp.headers.get("Content-Length")
+                total = int(length) + offset if length and length.isdigit() else None
+                done, next_note = offset, offset + (64 << 20)
+                print(f"downloading version {version_id} → {part.name}", file=sys.stderr)
+                with part.open(mode) as f:
+                    while chunk := resp.read(1 << 20):
+                        f.write(chunk)
+                        done += len(chunk)
+                        if total and done >= next_note:
+                            next_note = done + (64 << 20)
+                            print(f"  {done >> 20} / {total >> 20} MiB", file=sys.stderr)
+                if total is not None and done < total:
+                    raise ConnectionError(f"short read: {done} of {total} bytes")
+            break
+        except urllib.error.HTTPError as e:
+            text = e.read().decode("utf-8", "replace")
+            if e.code == 416 and offset:
+                # Range start beyond EOF → the .part file already holds the
+                # whole file; verify it instead of restarting the download.
+                print("server says the resume range is already satisfied — "
+                      "verifying the existing .part file", file=sys.stderr)
+                break
+            if (e.code == 429 or e.code >= 500) and not final:
+                wait = retry_wait(delay, e.headers)
+                print(f"download HTTP {e.code}; retrying in {wait:.0f}s "
+                      f"(resume from byte {offset})", file=sys.stderr)
+                time.sleep(wait)
+                delay = min(delay * 2, CIVITAI_BACKOFF_MAX)
+                continue
+            raise civitai_download_error(e, text) from None
+        except urllib.error.URLError as e:
+            if final:
+                raise ApiError(f"download failed: {e.reason}; {CIVITAI_PROXY_HINT}") from e
+            resume_at = part.stat().st_size if part.exists() else 0
+            print(f"download failed ({e.reason}); retrying in {delay:.0f}s "
+                  f"(resume from byte {resume_at})", file=sys.stderr)
+            time.sleep(delay)
+            delay = min(delay * 2, CIVITAI_BACKOFF_MAX)
+        except (OSError, http.client.HTTPException) as e:
+            # Mid-stream failures (ConnectionResetError, IncompleteRead, socket
+            # timeout, ...) — the next attempt resumes from the .part file.
+            if final:
+                raise ApiError(f"download interrupted: {type(e).__name__}; "
+                               f"{CIVITAI_PROXY_HINT}") from e
+            resume_at = part.stat().st_size if part.exists() else 0
+            print(f"download interrupted ({type(e).__name__}); retrying in "
+                  f"{delay:.0f}s (resume from byte {resume_at})", file=sys.stderr)
+            time.sleep(delay)
+            delay = min(delay * 2, CIVITAI_BACKOFF_MAX)
+    sha256 = file_sha256(part)
+    if expected and sha256.lower() != str(expected).lower():
+        part.unlink(missing_ok=True)
+        raise ApiError(
+            f"SHA256 mismatch for version {version_id}: downloaded {sha256}, "
+            f"civitai lists {expected}; the .part file was discarded. Note: "
+            "civitai's database is known to carry wrong SHA256 values (upstream "
+            "issue) — check the model page manually before retrying.")
+    name = safe_filename(final_name or (file_entry or {}).get("name")
+                         or mini.get("fileName") or "lora.safetensors")
+    target = files_dir / f"{model_tag}-{version_id}-{name}"
+    os.replace(part, target)
+    version_name = detail.get("name") or mini.get("versionName") or str(version_id)
+    entry = {
+        "modelId": model_id,
+        "versionId": version_id,
+        "air": mini.get("air"),
+        "name": f'{mini.get("modelName") or ""} {version_name}'.strip(),
+        "baseModel": mini.get("baseModel") or detail.get("baseModel"),
+        "trainedWords": detail.get("trainedWords") or [],
+        "sha256": sha256,
+        "md5": file_md5(target),
+        "localPath": str(target),
+        "rhHost": None,
+        "rhFileName": None,
+        "syncedAt": None,
+        "status": "downloaded",
+    }
+    manifest = load_manifest()
+    upsert_manifest(manifest, entry)
+    return {**entry, "fileId": part_id, "fileName": name,
+            "sizeMB": round(target.stat().st_size / (1 << 20), 1)}
+
+
+def rh_resource_records(key: str, host: str, payload: dict, max_pages: int = 4) -> list[dict]:
+    """Page through /openapi/v2/resource/list (size caps at 50; rate limit 20/min)."""
+    records = []
+    for page in range(1, max_pages + 1):
+        resp = check(api_v2(key, host, "/openapi/v2/resource/list",
+                            dict(payload, current=page, size=50)), v2=True)
+        data = resp.get("data") or {}
+        batch = data.get("records") or []
+        records.extend(batch)
+        if len(batch) < 50:
+            break
+    return records
+
+
+def civitai_source(desc: str) -> dict | None:
+    """modelId/versionId extracted from a civitai.com/models/... link in desc."""
+    m = CIVITAI_LINK_RE.search(desc or "")
+    if not m:
+        return None
+    out = {"modelId": int(m.group(1))}
+    if m.group(2):
+        out["versionId"] = int(m.group(2))
+    return out
+
+
+def summarize_rh_lora(record: dict) -> dict:
+    versions = record.get("versions") or []
+    words: list = []
+    for v in versions:
+        raw = v.get("triggerWords")
+        # RunningHub returns triggerWords as a plain string (or a list on some records)
+        items = raw if isinstance(raw, list) else [raw]
+        for w in items:
+            w = str(w or "").strip()
+            if w and w not in words:
+                words.append(w)
+    return {
+        "nodeModelName": record.get("nodeModelName"),
+        "desc": record.get("desc"),
+        "civitaiSource": civitai_source(record.get("desc") or ""),
+        "baseModels": [v.get("baseModel") for v in versions if v.get("baseModel")],
+        "triggerWords": words,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -703,6 +1325,117 @@ def cmd_download(args):
     print(download(args.url, args.out, overwrite=args.overwrite))
 
 
+def cmd_civitai_search(args):
+    if args.limit < 1:
+        print("--limit must be >= 1", file=sys.stderr); sys.exit(2)
+    allowed = civitai_allow(args.base) if args.base else None
+    emit(civitai_search(args.query, allowed=allowed, base=args.base, sort=args.sort,
+                        period=args.period, limit=args.limit, nsfw=args.nsfw))
+
+
+def cmd_civitai_info(args):
+    token = civitai_key(required=False)
+    ident = str(args.id)
+    version_only = None
+    ambiguous = False
+    if args.version:
+        version_only = civitai_request(f"/api/v1/model-versions/{ident}", token=token)
+        model = civitai_request(f"/api/v1/models/{version_only.get('modelId')}", token=token)
+    else:
+        try:
+            model = civitai_request(f"/api/v1/models/{ident}", token=token)
+        except ApiError as exc:
+            if exc.status != 404:
+                raise
+            # not a model id → treat as a version id and pull its parent model too
+            version_only = civitai_request(f"/api/v1/model-versions/{ident}", token=token)
+            model = civitai_request(f"/api/v1/models/{version_only.get('modelId')}", token=token)
+        if version_only is None and not args.model:
+            # the id resolved to a model, but the same number may also be a
+            # version id — one cheap probe so the ambiguity is never silent
+            ambiguous = civitai_mini(ident, token) is not None
+            if ambiguous:
+                print(f"{ident} is both a model id and a version id on civitai.com; "
+                      "returning the model by default — pass --version for the version",
+                      file=sys.stderr)
+    versions = model.get("modelVersions") or []
+    if version_only is not None:
+        versions = [v for v in versions if str(v.get("id")) == str(version_only.get("id"))]
+        if not versions:
+            versions = [version_only]
+    out = {
+        "model": {
+            "modelId": model.get("id"),
+            "name": model.get("name"),
+            "type": model.get("type"),
+            "nsfw": model.get("nsfw"),
+            "creator": (model.get("creator") or {}).get("username"),
+            "tags": tag_names(model.get("tags"))[:10],
+            "license": license_fields(model),
+        },
+        "versions": [],
+    }
+    if ambiguous:
+        out["ambiguity"] = True
+        out["hint"] = "this id is also a version id; re-run with --version to see it"
+    for version in versions[:10]:
+        mini = civitai_mini(version.get("id"), token)
+        out["versions"].append(summarize_civitai_version(version, mini))
+    emit(out)
+
+
+def cmd_civitai_download(args):
+    token = civitai_key(required=False)
+    entry = civitai_download(args.version_id, args.file_id, token=token)
+    emit({k: entry.get(k) for k in
+          ("fileId", "sha256", "md5", "sizeMB", "fileName", "air", "localPath")})
+
+
+def cmd_lora_sync(args):
+    key, host = resolve_key(args), resolve_host(args)
+    manifest = load_manifest()
+    entry = manifest_entry(manifest, args.version_id)
+    if entry and entry.get("rhFileName") and entry.get("rhHost") == host:
+        emit({"versionId": args.version_id, "rhFileName": entry["rhFileName"],
+              "localPath": entry.get("localPath"), "reused": True,
+              "hint": "already synced to this host — put rhFileName into "
+                      "RHLoraLoader.file_name"})
+        return
+    if not (entry and entry.get("localPath") and Path(entry["localPath"]).is_file()):
+        token = civitai_key(required=False)
+        entry = civitai_download(args.version_id, None, token=token)
+        manifest = load_manifest()  # civitai_download rewrote it
+    upload = upload_lora(key, host, entry["localPath"], args.name or entry.get("name"))
+    stored = manifest_entry(manifest, args.version_id) or entry
+    if args.name:
+        stored["name"] = args.name
+    stored.update({"rhFileName": upload.get("fileName"), "rhHost": host,
+                   "status": "synced",
+                   "syncedAt": datetime.datetime.now(datetime.timezone.utc).isoformat()})
+    upsert_manifest(manifest, stored)
+    emit({"versionId": args.version_id, "rhFileName": upload.get("fileName"),
+          "localPath": stored.get("localPath"), "reused": bool(upload.get("reused")),
+          "hint": "put rhFileName into RHLoraLoader.file_name "
+                  "(see references/uploads.md)"})
+
+
+def cmd_lora_find(args):
+    key, host = resolve_key(args), resolve_host(args)
+    allowed = civitai_allow(args.base) if args.base else None
+    payload = {"resourceType": "LORA", "resourceName": args.query}
+    if args.base:
+        payload["baseModels"] = [args.base]
+    records = [summarize_rh_lora(r)
+               for r in rh_resource_records(key, host, payload)]
+    results = civitai_search(args.query, allowed=allowed, base=args.base, limit=10)
+    emit({"runninghub": {"count": len(records), "records": records},
+          "civitai": {"count": len(results), "results": results}})
+
+
+def cmd_lora_list(args):
+    emit(load_manifest())
+
+
 # ---------------------------------------------------------------------------
 # Argument wiring
 # ---------------------------------------------------------------------------
@@ -841,6 +1574,43 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--overwrite", action="store_true",
                    help="replace the output file if it already exists")
 
+    p = cmd("civitai-search", cmd_civitai_search,
+            "search LoRA models on civitai.com (anonymous; optional --base filter)")
+    p.add_argument("query")
+    p.add_argument("--base", metavar="RH_BASE",
+                   help="RunningHub base model (key of data/basemodel_map.json), e.g. IL-XL")
+    p.add_argument("--sort", choices=CIVITAI_SORTS)
+    p.add_argument("--period", choices=["AllTime", "Year", "Month", "Week", "Day"])
+    p.add_argument("--limit", type=int, default=20, help="max results (default 20)")
+    p.add_argument("--nsfw", action="store_true", help="include NSFW results")
+
+    p = cmd("civitai-info", cmd_civitai_info,
+            "civitai.com model or version details (modelId/versionId auto-detected)")
+    p.add_argument("id", help="modelId or versionId")
+    group = p.add_mutually_exclusive_group()
+    group.add_argument("--model", action="store_true",
+                       help="treat the id as a model id (skip version fallback)")
+    group.add_argument("--version", action="store_true",
+                       help="treat the id as a version id")
+
+    p = cmd("civitai-download", cmd_civitai_download,
+            "download a LoRA version from civitai.com (most files need CIVITAI_API_KEY)")
+    p.add_argument("version_id", type=int)
+    p.add_argument("--file-id", type=int, help="specific file of the version (default: primary)")
+
+    p = cmd("lora-sync", cmd_lora_sync,
+            "download a civitai LoRA and upload it to RunningHub (idempotent)")
+    p.add_argument("version_id", type=int)
+    p.add_argument("--name", help="display name for the RunningHub LoRA upload")
+
+    p = cmd("lora-find", cmd_lora_find,
+            "search RunningHub public LoRAs and civitai.com in one shot")
+    p.add_argument("query")
+    p.add_argument("--base", metavar="RH_BASE",
+                   help="RunningHub base model filter (key of data/basemodel_map.json)")
+
+    p = cmd("lora-list", cmd_lora_list, "print the local LoRA sync manifest")
+
     return ap
 
 
@@ -866,6 +1636,10 @@ def main() -> None:
         sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(130)
+    except Exception as e:  # noqa: BLE001 — type name only: the message may carry URLs
+        print(json.dumps({"error": type(e).__name__}, ensure_ascii=False),
+              file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

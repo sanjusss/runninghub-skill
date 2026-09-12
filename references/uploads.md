@@ -30,15 +30,24 @@ rh.py upload-lora my-style.safetensors --name 我的风格
 2. `POST /api/openapi/getLoraUploadUrl`，体 `{apiKey, loraName, md5Hex}` → 返回 `data.url`（预签名）与 `data.fileName`
 3. `PUT data.url`，头 `Content-Type: application/octet-stream`，体为文件二进制
 
-然后在工作流里用 `RHLoraLoader` 节点加载 `fileName`：
+然后在工作流里用 `RHLoraLoader` 节点加载 `fileName`。字段名以 `/proxy/{key}/object_info` 的实测为准（2026-09-12）：
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `file_name` | STRING | 填上传返回的 `fileName`（注意不是 `lora_name`，那是原生 `LoraLoader` 的字段） |
+| `strength_model` | FLOAT | 模型强度，默认 1.0，常用 0.8 |
+| `strength_clip` | FLOAT | `CLIP` 强度，默认 1.0，常用 0.8 |
+
 ```bash
-rh.py workflow <id> --node "15:lora_name=api-lora-cn/<md5>.safetensors"
+rh.py workflow <id> --node "15:file_name=api-lora-cn/<md5>.safetensors" \
+  --node "15:strength_model=0.8"
 ```
 
 注意：
 - 该通道上传的 LoRA **只有 RHLoraLoader 认识**，原生 LoraLoader 读不到
 - md5 是缓存键：同文件重复“上传”时，服务端可能只返回 `fileName`；`rh.py` 会直接返回已有文件信息
-- 想用平台公共 LoRA：`rh.py resources --type LORA --kw <关键词>`，把 `nodeModelName` 填进节点
+- 想用平台公共 LoRA：`rh.py resources --type LORA --kw <关键词>`，把 `nodeModelName` 填进原生 LoraLoader 节点
+- 想从 `Civitai` 找 `LoRA` 并同步过来：搜索、下载、校验、上传一条链路已封装为 `civitai-search`/`lora-find`/`lora-sync`，见 `civitai-lora-sync.md`
 
 ## 3. 旧接口（弃用）
 

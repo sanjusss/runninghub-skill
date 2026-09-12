@@ -1,6 +1,6 @@
 # RunningHub 开放 API Skill
 
-一个调用 RunningHub（www.runninghub.cn / www.runninghub.ai）开放 API 的 agent skill：运行 ComfyUI 工作流和 AI 应用，查询并调用标准模型，管理任务，上传资源，以及查询账户、API Key 与队列。
+一个调用 RunningHub（www.runninghub.cn / www.runninghub.ai）开放 API 的 agent skill：运行 ComfyUI 工作流和 AI 应用，查询并调用标准模型，管理任务，上传资源，查询账户、API Key 与队列，并支持从 `Civitai` 搜索、下载 `LoRA` 同步到平台。
 
 ## 安装
 
@@ -25,9 +25,12 @@ cp -r . <skills-dir>/runninghub/
 read -rsp "RunningHub API Key: " RUNNINGHUB_API_KEY && echo
 export RUNNINGHUB_API_KEY
 export RUNNINGHUB_HOST=www.runninghub.ai   # 可选，默认 www.runninghub.cn；两站 key 互不相通
+export CIVITAI_API_KEY=...                 # 可选，仅从 civitai.com 下载 LoRA 时需要（搜索匿名可用）
 ```
 
 脚本优先从环境变量读取 key。不要把 key 写进项目文件或命令参数。
+
+`CIVITAI_API_KEY` 在 `Civitai` 网页的用户设置 → `API Keys` 里创建；`civitai-search`/`civitai-info`/`lora-find` 不需要它。
 
 Key 在网页端创建：https://www.runninghub.cn/enterprise-api/consumerApi （国际站把域名换成 www.runninghub.ai）。
 
@@ -47,10 +50,11 @@ python3 scripts/rh.py --help
 
 ```
 SKILL.md                        # 主入口：双站点、命令速查、场景路由
-scripts/rh.py                   # 统一 CLI（20 个子命令，纯标准库）
+scripts/rh.py                   # 统一 CLI（26 个子命令，纯标准库）
 scripts/build_models_registry.py# 从官方文档重建 data/models.json
 data/models.json                # 标准模型端点目录（参数、枚举、安全默认值）
-references/                     # 9 份按需加载的深度文档（API 参考/任务生命周期/错误码等）
+data/basemodel_map.json         # RunningHub 底模 → Civitai baseModel 允许集与血统权重
+references/                     # 10 份按需加载的深度文档（API 参考/任务生命周期/错误码/Civitai LoRA 同步等）
 ```
 
 ## 数据维护
