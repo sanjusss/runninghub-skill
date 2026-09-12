@@ -9,7 +9,7 @@ AI 应用 = 平台上别人（或你自己）发布的**封装好的 ComfyUI 工
 ## 2. 先取调用模板（强烈推荐第一步）
 
 ```bash
-python3 scripts/rh.py app-demo 1877265245566922800
+rh.py app-demo 1877265245566922800
 ```
 
 响应 `data` 包含：
@@ -22,7 +22,7 @@ python3 scripts/rh.py app-demo 1877265245566922800
 ## 3. 发起任务
 
 ```bash
-python3 scripts/rh.py app <webappId> \
+rh.py app <webappId> \
   --node "122:prompt=一个在教室里的金发女孩" \
   --node "123:image=openapi/61432a….png" \
   --password 访问密码 --timeout 1800

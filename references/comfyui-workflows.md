@@ -16,7 +16,7 @@
 
 ```bash
 # 方法 A：拉取该工作流的 API 格式 JSON（无需网页操作）
-python3 scripts/rh.py workflow-json 1904136902449209346 -o wf.api.json
+rh.py workflow-json 1904136902449209346 -o wf.api.json
 ```
 得到的 JSON 结构：`{"3": {"class_type": "KSampler", "inputs": {"seed":…, "steps":…}}, "6": {"class_type": "CLIPTextEncode", "inputs": {"text": "…"}}, …}`。
 - 顶层 key = nodeId
@@ -25,7 +25,7 @@ python3 scripts/rh.py workflow-json 1904136902449209346 -o wf.api.json
 
 ```bash
 # 修改提示词与种子
-python3 scripts/rh.py workflow 1904136902449209346 \
+rh.py workflow 1904136902449209346 \
   --node "6:text=1 girl in classroom" \
   --node "3:seed=1231231"
 ```
@@ -48,9 +48,9 @@ python3 scripts/rh.py workflow 1904136902449209346 \
 先上传拿 `fileName`，再喂给对应加载节点：
 
 ```bash
-python3 scripts/rh.py upload photo.png
+rh.py upload photo.png
 # → data.fileName = "openapi/61432a….png"
-python3 scripts/rh.py workflow <workflowId> --node "10:image=openapi/61432a….png"
+rh.py workflow <workflowId> --node "10:image=openapi/61432a….png"
 ```
 
 | 上传文件 | 工作流节点 | fieldName |
@@ -83,13 +83,13 @@ LoRA（仅 `RHLoraLoader` 节点）：`rh.py upload-lora my.safetensors` 一步�
 
 ## 6. 原生 ComfyUI 协议（高级）
 
-`https://{host}/proxy/<apiKey>`（24G）/ `https://{host}/proxy-plus/<apiKey>`（48G）等价于本地 ComfyUI 的 `http://127.0.0.1:8188`：`/prompt`、`/object_info`、`/history`、WebSocket 全套可用。适合已有一套 ComfyUI 客户端代码/插件（SillyTavern、Krita 插件、EasyAI）想无缝切到云端的场景。模型需先在 RunningHub 网页"模型库"收藏。
+`https://{host}/proxy/{API_KEY_FROM_ENV}`（24G）和 `https://{host}/proxy-plus/{API_KEY_FROM_ENV}`（48G）等价于本地 ComfyUI 的 `http://127.0.0.1:8188`：`/prompt`、`/object_info`、`/history`、WebSocket 全套可用。URL 中必须使用环境变量里的真实 key，不要把 URL 写进日志或回复。该方式适合已有 ComfyUI 客户端或插件的场景；模型需先在 RunningHub 网页“模型库”收藏。
 
 ## 7. 端到端验证过的例子
 
 ```bash
 # 提交（替换提示词与 seed）→ 32 秒 SUCCESS → 消耗 7 RH 币 → 返回结果 URL
-python3 scripts/rh.py workflow 1904136902449209346 \
+rh.py workflow 1904136902449209346 \
   --node "6:text=a tiny robot painting a wall mural, colorful" \
   --node "3:seed=777"
 ```

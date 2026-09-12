@@ -16,9 +16,9 @@
 ## 2. 常用命令
 
 ```bash
-python3 scripts/rh.py account   # 余额 remainCoins(RH币)/remainMoney、当前任务数、apiType
-python3 scripts/rh.py apikeys   # Key 列表（掩码）、状态、额度、创建时间
-python3 scripts/rh.py queue     # apiKeyType(EXCLUSIVE/SHARED/NORMAL)、并发上限、运行/排队数
+rh.py account   # 余额 remainCoins(RH币)/remainMoney、当前任务数、apiType
+rh.py apikeys   # Key 列表（掩码）、状态、额度、创建时间
+rh.py queue     # apiKeyType(EXCLUSIVE/SHARED/NORMAL)、并发上限、运行/排队数
 ```
 
 `account` 的 `apiType` 与 `queue` 的 `apiKeyType` 告诉你手里这把 Key 属于哪类——**调用模型 API 报 1014 时先查这里确认 Key 类型**。

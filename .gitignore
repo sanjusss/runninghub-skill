@@ -4,6 +4,8 @@ __pycache__/
 
 # 运行期产物（workflow-json 默认输出、下载的结果文件）
 workflow-*.api.json
+outputs/
+*.part
 *_0.png
 *_0.jpg
 *_0.mp4

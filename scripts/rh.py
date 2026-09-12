@@ -12,7 +12,7 @@ Coverage
   Uploads    : media (v2 binary), LoRA (md5 + presigned PUT)
   Webhooks   : event detail, retry
 
-API key resolution: --key flag > $RUNNINGHUB_API_KEY
+API key resolution: $RUNNINGHUB_API_KEY
 Host resolution   : --host flag > $RUNNINGHUB_HOST > www.runninghub.cn
   (use --host www.runninghub.ai for the international site)
 
@@ -27,6 +27,7 @@ import json
 import mimetypes
 import os
 import re
+import secrets
 import sys
 import time
 import urllib.error
@@ -38,8 +39,12 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REGISTRY_PATH = SCRIPT_DIR.parent / "data" / "models.json"
 
 DEFAULT_HOST = "www.runninghub.cn"
+ALLOWED_HOSTS = {"www.runninghub.cn", "www.runninghub.ai"}
 TERMINAL_STATES = {"SUCCESS", "FAILED"}
 POLL_INTERVAL = 3.0
+QUERY_RETRIES = 3
+SAFE_COMPONENT_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+SAFE_EXTENSION_RE = re.compile(r"^\.[A-Za-z0-9]{1,10}$")
 
 
 # ---------------------------------------------------------------------------
@@ -47,17 +52,19 @@ POLL_INTERVAL = 3.0
 # ---------------------------------------------------------------------------
 
 class ApiError(Exception):
-    def __init__(self, message: str, code=None, raw=None):
+    def __init__(self, message: str, code=None, raw=None, *, status=None, retryable=False):
         super().__init__(message)
         self.code = code
         self.raw = raw
+        self.status = status
+        self.retryable = retryable
 
 
 def resolve_key(args) -> str:
     key = getattr(args, "key", None) or os.environ.get("RUNNINGHUB_API_KEY", "")
     key = key.strip()
     if not key:
-        print("No API key. Pass --key, or export RUNNINGHUB_API_KEY. "
+        print("No API key. Export RUNNINGHUB_API_KEY. "
               "Create keys at https://www.runninghub.cn/enterprise-api/consumerApi",
               file=sys.stderr)
         sys.exit(2)
@@ -66,32 +73,58 @@ def resolve_key(args) -> str:
 
 def resolve_host(args) -> str:
     host = getattr(args, "host", None) or os.environ.get("RUNNINGHUB_HOST", "") or DEFAULT_HOST
-    return host.removeprefix("https://").removeprefix("http://").rstrip("/")
+    host = host.strip().removeprefix("https://").removeprefix("http://").rstrip("/")
+    if host not in ALLOWED_HOSTS:
+        print(f"Unsupported host: {host}. Choose www.runninghub.cn or www.runninghub.ai.",
+              file=sys.stderr)
+        sys.exit(2)
+    return host
 
 
-def http_request(method: str, url: str, *, headers=None, body=None, timeout=120) -> dict:
+def display_url(url: str) -> str:
+    """Remove query parameters and fragments before including a URL in an error."""
+    parsed = urllib.parse.urlsplit(url)
+    return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
+
+
+def http_request(method: str, url: str, *, headers=None, body=None, timeout=120,
+                 allow_empty: bool = False) -> dict:
     req = urllib.request.Request(url, method=method, data=body)
     req.add_header("User-Agent", "runninghub-skill/1.0")
     for k, v in (headers or {}).items():
         req.add_header(k, v)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
+            status = getattr(resp, "status", 200)
             payload = resp.read()
     except urllib.error.HTTPError as e:
+        status = e.code
         payload = e.read()
     except urllib.error.URLError as e:
-        raise ApiError(f"network error: {e.reason}") from e
+        raise ApiError(f"network error: {e.reason}", retryable=True) from e
+    if not payload and allow_empty and 200 <= status < 300:
+        return {}
     text = payload.decode("utf-8", "replace")
     try:
-        return json.loads(text)
+        parsed = json.loads(text)
     except json.JSONDecodeError:
-        raise ApiError(f"non-JSON response from {url}: {text[:300]}") from None
+        kind = "empty" if not payload else "non-JSON"
+        raise ApiError(f"{kind} response from {display_url(url)} (HTTP {status}): {text[:300]}",
+                       status=status, retryable=status == 429 or status >= 500) from None
+    if status >= 400:
+        message = (parsed.get("msg") or parsed.get("errorMessage")
+                   if isinstance(parsed, dict) else None)
+        raise ApiError(str(message or f"HTTP {status} from {display_url(url)}"),
+                       raw=parsed, status=status,
+                       retryable=status == 429 or status >= 500)
+    return parsed
 
 
-def api_v1(key: str, host: str, path: str, payload: dict | None = None, method: str = "POST") -> dict:
+def api_v1(key: str, host: str, path: str, payload: dict | None = None,
+           method: str = "POST", key_field: str = "apiKey") -> dict:
     """Legacy /task /api /uc endpoints: apiKey in body/query + Bearer header."""
     body = dict(payload or {})
-    body.setdefault("apiKey", key)
+    body.setdefault(key_field, key)
     if method == "GET":
         qs = urllib.parse.urlencode({k: v for k, v in body.items() if v is not None})
         url = f"https://{host}{path}?{qs}"
@@ -177,26 +210,46 @@ def parse_node_args(node_list: list[str] | None, node_file: str | None) -> list[
 # Upload / download helpers
 # ---------------------------------------------------------------------------
 
+def file_chunks(path: Path, *, prefix: bytes = b"", suffix: bytes = b""):
+    """Yield a file-backed HTTP body without loading the full file into memory."""
+    if prefix:
+        yield prefix
+    with path.open("rb") as f:
+        while chunk := f.read(1 << 20):
+            yield chunk
+    if suffix:
+        yield suffix
+
+
+def file_md5(path: Path) -> str:
+    digest = hashlib.md5()
+    with path.open("rb") as f:
+        while chunk := f.read(1 << 20):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def upload_media(key: str, host: str, file_path: str) -> dict:
     path = Path(file_path)
     if not path.is_file():
         print(f"file not found: {file_path}", file=sys.stderr); sys.exit(2)
     mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
-    boundary = "----rh-skill-" + hashlib.md5(str(time.time()).encode()).hexdigest()
-    body = b"".join([
+    boundary = "----rh-skill-" + secrets.token_hex(16)
+    safe_name = path.name.replace('"', "_").replace("\r", "_").replace("\n", "_")
+    prefix = b"".join([
         f"--{boundary}\r\n".encode(),
-        f'Content-Disposition: form-data; name="file"; filename="{path.name}"\r\n'.encode(),
+        f'Content-Disposition: form-data; name="file"; filename="{safe_name}"\r\n'.encode(),
         f"Content-Type: {mime}\r\n\r\n".encode(),
-        path.read_bytes(),
-        f"\r\n--{boundary}--\r\n".encode(),
     ])
+    suffix = f"\r\n--{boundary}--\r\n".encode()
     resp = http_request(
         "POST", f"https://{host}/openapi/v2/media/upload/binary",
         headers={
             "Authorization": f"Bearer {key}",
             "Content-Type": f"multipart/form-data; boundary={boundary}",
-        }, body=body, timeout=600)
-    check(resp)
+            "Content-Length": str(len(prefix) + path.stat().st_size + len(suffix)),
+        }, body=file_chunks(path, prefix=prefix, suffix=suffix), timeout=600)
+    check(resp, v2=True)
     return resp["data"]
 
 
@@ -205,49 +258,75 @@ def upload_lora(key: str, host: str, file_path: str, lora_name: str | None) -> d
     path = Path(file_path)
     if not path.is_file():
         print(f"file not found: {file_path}", file=sys.stderr); sys.exit(2)
-    md5 = hashlib.md5(path.read_bytes()).hexdigest()
+    md5 = file_md5(path)
     name = lora_name or path.stem
     resp = check(api_v1(key, host, "/api/openapi/getLoraUploadUrl",
                         {"loraName": name, "md5Hex": md5}))
     data = resp["data"]
-    if not isinstance(data, dict) or not data.get("url"):
-        emit(resp)
-        sys.exit("no upload url returned (LoRA may already exist — try the fileName directly)")
+    if not isinstance(data, dict):
+        raise ApiError("invalid LoRA upload response", raw=resp)
+    if not data.get("url"):
+        if data.get("fileName"):
+            return {"fileName": data["fileName"], "md5Hex": md5,
+                    "reused": True, "hint": "use fileName in the RHLoraLoader node"}
+        raise ApiError("LoRA upload response contains neither url nor fileName", raw=resp)
     http_request("PUT", data["url"],
-                 headers={"Content-Type": "application/octet-stream"},
-                 body=path.read_bytes(), timeout=1800)
+                 headers={"Content-Type": "application/octet-stream",
+                          "Content-Length": str(path.stat().st_size)},
+                 body=file_chunks(path), timeout=1800, allow_empty=True)
     return {"fileName": data.get("fileName"), "md5Hex": md5,
             "hint": f"use fileName in the RHLoraLoader node"}
 
 
-def download(url: str, out: str | None) -> str:
+def download(url: str, out: str | None, *, overwrite: bool = False) -> str:
     """Stream a result URL to disk; returns the local path."""
     if not out:
         name = os.path.basename(urllib.parse.urlparse(url).path) or "download"
         out = str(Path.cwd() / name)
+    target = Path(out).expanduser().resolve()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists() and not overwrite:
+        raise FileExistsError(f"output already exists: {target}; pass --overwrite to replace it")
+    partial = target.with_name(f".{target.name}.{os.getpid()}.part")
     req = urllib.request.Request(url, headers={"User-Agent": "runninghub-skill/1.0"})
-    with urllib.request.urlopen(req, timeout=600) as resp, open(out, "wb") as f:
-        while True:
-            chunk = resp.read(1 << 16)
-            if not chunk:
-                break
-            f.write(chunk)
-    return out
+    try:
+        with urllib.request.urlopen(req, timeout=600) as resp, partial.open("xb") as f:
+            while chunk := resp.read(1 << 16):
+                f.write(chunk)
+        if target.exists() and not overwrite:
+            raise FileExistsError(f"output already exists: {target}; pass --overwrite to replace it")
+        os.replace(partial, target)
+    except Exception:
+        partial.unlink(missing_ok=True)
+        raise
+    return str(target)
 
 
-def download_results(results: list, outdir: str, task_id: str) -> list[dict]:
+def result_extension(result: dict, url: str) -> str:
+    ext = os.path.splitext(urllib.parse.urlparse(url).path)[1]
+    if SAFE_EXTENSION_RE.fullmatch(ext):
+        return ext.lower()
+    output_type = str(result.get("outputType") or result.get("fileType") or "bin")
+    output_type = re.sub(r"[^A-Za-z0-9]", "", output_type)[:10] or "bin"
+    return f".{output_type.lower()}"
+
+
+def download_results(results: list, outdir: str, task_id: str,
+                     *, overwrite: bool = False) -> list[dict]:
     """Download every file result; annotate each entry with its local path."""
     saved = []
-    outdir_path = Path(outdir)
+    outdir_path = Path(outdir).expanduser().resolve()
     outdir_path.mkdir(parents=True, exist_ok=True)
+    safe_task_id = str(task_id)
+    if not SAFE_COMPONENT_RE.fullmatch(safe_task_id):
+        safe_task_id = re.sub(r"[^A-Za-z0-9_-]", "_", safe_task_id).strip("_") or "task"
     for i, r in enumerate(results or []):
         entry = dict(r)
         url = r.get("url") or r.get("fileUrl")
         if url:
-            ext = os.path.splitext(urllib.parse.urlparse(url).path)[1] or f'.{r.get("outputType") or r.get("fileType") or "bin"}'
-            out = str(outdir_path / f"{task_id}_{i}{ext}")
+            out = str(outdir_path / f"{safe_task_id}_{i}{result_extension(r, url)}")
             try:
-                entry["localPath"] = download(url, out)
+                entry["localPath"] = download(url, out, overwrite=overwrite)
             except Exception as exc:  # noqa: BLE001
                 entry["downloadError"] = str(exc)
         saved.append(entry)
@@ -282,8 +361,22 @@ def query_v2(key: str, host: str, task_id: str) -> dict:
 def wait_task(key: str, host: str, task_id: str, timeout: float, quiet: bool) -> dict:
     """Poll /openapi/v2/query until SUCCESS/FAILED or timeout."""
     deadline = time.monotonic() + timeout
+    failures = 0
     while True:
-        resp = query_v2(key, host, task_id)
+        try:
+            resp = query_v2(key, host, task_id)
+            failures = 0
+        except ApiError as exc:
+            failures += 1
+            if not exc.retryable or failures > QUERY_RETRIES:
+                raise
+            if not quiet:
+                print(f"query failed ({failures}/{QUERY_RETRIES}), retrying: {exc}",
+                      file=sys.stderr)
+            if time.monotonic() + POLL_INTERVAL > deadline:
+                raise
+            time.sleep(POLL_INTERVAL)
+            continue
         status = resp.get("status") or ""
         err = resp.get("errorCode") or ""
         if status in TERMINAL_STATES or err not in ("", None):
@@ -307,14 +400,16 @@ def run_and_deliver(key: str, host: str, task_id: str, args) -> None:
            "usage": final.get("usage"), "promptTips": final.get("promptTips")}
     if final.get("status") == "SUCCESS":
         results = final.get("results") or []
-        out["results"] = (download_results(results, args.outdir, task_id)
+        out["results"] = (download_results(results, args.outdir, task_id,
+                                            overwrite=args.overwrite)
                           if args.outdir else results)
     else:
         out["errorCode"] = final.get("errorCode")
         out["errorMessage"] = final.get("errorMessage")
         out["failedReason"] = final.get("failedReason")
     emit(out)
-    if final.get("status") != "SUCCESS":
+    if final.get("status") != "SUCCESS" or any(
+            r.get("downloadError") for r in out.get("results", [])):
         sys.exit(1)
 
 
@@ -326,7 +421,11 @@ def load_registry() -> dict:
     if not REGISTRY_PATH.exists():
         print(f"models registry missing: {REGISTRY_PATH}\n"
               "rebuild with: python3 scripts/build_models_registry.py", file=sys.stderr); sys.exit(2)
-    return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    try:
+        return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"cannot read models registry {REGISTRY_PATH}: {exc}", file=sys.stderr)
+        sys.exit(2)
 
 
 def registry_matches(reg: dict, kw: str | None, task: str | None) -> list[dict]:
@@ -348,17 +447,17 @@ def registry_matches(reg: dict, kw: str | None, task: str | None) -> list[dict]:
 
 def cmd_account(args):
     key, host = resolve_key(args), resolve_host(args)
-    emit(check(api_v1(key, host, "/uc/openapi/accountStatus", {"apikey": key})))
+    emit(check(api_v1(key, host, "/uc/openapi/accountStatus", key_field="apikey")))
 
 
 def cmd_apikeys(args):
     key, host = resolve_key(args), resolve_host(args)
-    emit(check(api_v2(key, host, "/openapi/v2/api-key/list", method="GET")))
+    emit(check(api_v2(key, host, "/openapi/v2/api-key/list", method="GET"), v2=True))
 
 
 def cmd_queue(args):
     key, host = resolve_key(args), resolve_host(args)
-    emit(check(api_v2(key, host, "/openapi/v2/queue/status", method="GET")))
+    emit(check(api_v2(key, host, "/openapi/v2/queue/status", method="GET"), v2=True))
 
 
 def cmd_resources(args):
@@ -367,7 +466,7 @@ def cmd_resources(args):
                "current": args.page, "size": args.size}
     if args.base_models:
         payload["baseModels"] = args.base_models.split(",")
-    emit(check(api_v2(key, host, "/openapi/v2/resource/list", payload)))
+    emit(check(api_v2(key, host, "/openapi/v2/resource/list", payload), v2=True))
 
 
 def cmd_upload(args):
@@ -390,8 +489,12 @@ def cmd_workflow_run(args):
     if nodes:
         payload["nodeInfoList"] = nodes
     if args.workflow_json:
-        wf = Path(args.workflow_json).read_text(encoding="utf-8")
-        json.loads(wf)  # validate
+        try:
+            wf = Path(args.workflow_json).read_text(encoding="utf-8")
+            json.loads(wf)  # validate
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"cannot read --workflow-json {args.workflow_json}: {exc}", file=sys.stderr)
+            sys.exit(2)
         payload["workflow"] = wf
     if args.webhook:
         payload["webhookUrl"] = args.webhook
@@ -551,7 +654,10 @@ def cmd_task_status(args):
 
 def cmd_task_query(args):
     key, host = resolve_key(args), resolve_host(args)
-    emit(query_v2(key, host, args.task_id))
+    resp = query_v2(key, host, args.task_id)
+    emit(resp)
+    if resp.get("status") == "FAILED" or resp.get("errorCode") not in (None, "", 0):
+        sys.exit(1)
 
 
 def cmd_task_outputs(args):
@@ -559,8 +665,14 @@ def cmd_task_outputs(args):
     resp = api_v1(key, host, "/task/openapi/outputs", {"taskId": args.task_id})
     if resp.get("code") == 0 and args.outdir and resp.get("data"):
         resp = dict(resp)
-        resp["data"] = download_results(resp["data"], args.outdir, args.task_id)
-    emit(resp)  # 804/813/805 envelopes are informative, not fatal
+        resp["data"] = download_results(resp["data"], args.outdir, args.task_id,
+                                        overwrite=args.overwrite)
+    emit(resp)  # 804/813 report running or queued states and keep exit code 0
+    if any(r.get("downloadError") for r in (resp.get("data") or [])
+           if isinstance(r, dict)):
+        sys.exit(1)
+    if resp.get("code") not in (0, "0", 804, "804", 813, "813"):
+        sys.exit(1)
 
 
 def cmd_task_cancel(args):
@@ -575,7 +687,8 @@ def cmd_task_wait(args):
 
 def cmd_webhook_detail(args):
     key, host = resolve_key(args), resolve_host(args)
-    emit(api_v1(key, host, "/task/openapi/getWebhookDetail", {"taskId": args.task_id}))
+    emit(check(api_v1(key, host, "/task/openapi/getWebhookDetail",
+                      {"taskId": args.task_id})))
 
 
 def cmd_webhook_retry(args):
@@ -583,11 +696,11 @@ def cmd_webhook_retry(args):
     payload = {"webhookId": str(args.webhook_id)}
     if args.url:
         payload["webhookUrl"] = args.url
-    emit(api_v1(key, host, "/task/openapi/retryWebhook", payload))
+    emit(check(api_v1(key, host, "/task/openapi/retryWebhook", payload)))
 
 
 def cmd_download(args):
-    print(download(args.url, args.out))
+    print(download(args.url, args.out, overwrite=args.overwrite))
 
 
 # ---------------------------------------------------------------------------
@@ -605,13 +718,15 @@ def add_run_options(p: argparse.ArgumentParser, default_timeout: float = 900,
     p.add_argument("--quiet", action="store_true", help="no per-poll status lines")
     p.add_argument("--outdir",
                    help="download outputs to this directory (default: return URLs only)")
+    p.add_argument("--overwrite", action="store_true",
+                   help="replace existing output files (requires --outdir)")
 
 
 def add_global(p: argparse.ArgumentParser, suppress: bool = False) -> None:
     # On subparsers use SUPPRESS so an explicit main-parser --key/--host
     # (placed before the subcommand) is not clobbered by subparser defaults.
     default = argparse.SUPPRESS if suppress else None
-    p.add_argument("--key", default=default, help="API key (default $RUNNINGHUB_API_KEY)")
+    p.add_argument("--key", default=default, help=argparse.SUPPRESS)
     p.add_argument("--host", default=default,
                    help="www.runninghub.cn (default) or www.runninghub.ai")
 
@@ -703,6 +818,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("task_id")
     p.add_argument("--outdir",
                    help="download outputs to this directory (default: return URLs only)")
+    p.add_argument("--overwrite", action="store_true",
+                   help="replace existing output files (requires --outdir)")
 
     p = cmd("task-cancel", cmd_task_cancel, "cancel a queued/running task")
     p.add_argument("task_id")
@@ -721,12 +838,17 @@ def build_parser() -> argparse.ArgumentParser:
     p = cmd("download", cmd_download, "download a result file URL to disk")
     p.add_argument("url")
     p.add_argument("-o", "--out")
+    p.add_argument("--overwrite", action="store_true",
+                   help="replace the output file if it already exists")
 
     return ap
 
 
 def main() -> None:
-    args = build_parser().parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
+    if getattr(args, "overwrite", False) and hasattr(args, "outdir") and not args.outdir:
+        parser.error("--overwrite requires --outdir")
     if getattr(args, "info", None) and args.cmd == "models":
         args.endpoint = args.info
         cmd_models_info(args)
@@ -734,9 +856,13 @@ def main() -> None:
     try:
         args.fn(args)
     except ApiError as e:
-        print(json.dumps({"error": str(e), "code": e.code,
+        print(json.dumps({"error": str(e), "code": e.code, "httpStatus": e.status,
                           "raw": e.raw if isinstance(e.raw, dict) else str(e.raw or "")},
                          ensure_ascii=False, indent=2), file=sys.stderr)
+        sys.exit(1)
+    except (OSError, urllib.error.URLError) as e:
+        print(json.dumps({"error": str(e)}, ensure_ascii=False, indent=2),
+              file=sys.stderr)
         sys.exit(1)
     except KeyboardInterrupt:
         sys.exit(130)

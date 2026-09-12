@@ -1,10 +1,11 @@
-# RunningHub 开放 API 完整参考
+# RunningHub 开放 API 主要接口参考
 
 所有端点均在两个站点可用：`https://www.runninghub.cn` 与 `https://www.runninghub.ai`（下文以 `{host}` 指代）。
 
 认证方式（所有端点通用）：
-- **v1 平台端点**（`/task/*`、`/api/*`、`/uc/*`）：请求头 `Authorization: Bearer <KEY>`，同时把 `apiKey` 放进请求体（GET 则放 query）
-- **v2 端点**（`/openapi/v2/*`）：仅请求头 `Authorization: Bearer <KEY>`，请求体不带 apiKey
+- 下文的 `$RUNNINGHUB_API_KEY` 表示从环境变量读取的真实值，不能把这段文字作为 key 使用
+- **v1 平台端点**（`/task/*`、`/api/*`、`/uc/*`）：请求头 `Authorization: Bearer $RUNNINGHUB_API_KEY`，同时把 `apiKey` 放进请求体（GET 则放 query）；账户接口使用小写 `apikey`
+- **v2 端点**（`/openapi/v2/*`）：仅请求头 `Authorization: Bearer $RUNNINGHUB_API_KEY`，请求体不带 apiKey
 - v1 端点还要求 `Host` 头与访问域名一致（HTTP/1.1 默认行为，一般无需手动处理）
 
 响应包络：
@@ -49,14 +50,14 @@ POST {host}/task/openapi/create
 ### 1.2 获取工作流 API 格式 JSON
 ```
 POST {host}/api/openapi/getJsonApiFormat
-{"apiKey": "...", "workflowId": "1904136902449209346"}
+{"apiKey": "$RUNNINGHUB_API_KEY", "workflowId": "1904136902449209346"}
 ```
 响应 `data.prompt` 为字符串化的 ComfyUI API 格式 JSON（节点 ID → class_type/inputs）。用于确定 nodeId 与 fieldName。
 
 ### 1.3 取消任务
 ```
 POST {host}/task/openapi/cancel
-{"apiKey": "...", "taskId": "..."}
+{"apiKey": "$RUNNINGHUB_API_KEY", "taskId": "..."}
 ```
 成功 `code:0`；任务不存在 `807`。运行中的任务取消即停止计费消耗。
 
@@ -74,13 +75,13 @@ POST {host}/task/openapi/ai-app/run
 
 ### 2.2 获取 AI 应用调用示例（含 nodeInfoList 模板）
 ```
-GET {host}/api/webapp/apiCallDemo?apiKey=<KEY>&webappId=<ID>
+GET {host}/api/webapp/apiCallDemo?apiKey=$RUNNINGHUB_API_KEY&webappId={webappId}
 ```
 响应 `data`：`curl`（现成 curl 示例）、`webappName`、`nodeInfoList`（该应用全部可填节点及默认值）、`covers`、`tags`、`statisticsInfo`。**调用不熟悉的 AI 应用前先取这个模板。**
 
 ---
 
-## 3. 标准模型 API（356 端点，随官方目录更新）
+## 3. 标准模型 API（端点数量随官方目录更新）
 
 通用形态：
 ```
@@ -131,14 +132,14 @@ POST {host}/task/openapi/outputs
 ### 4.4 获取 webhook 事件详情
 ```
 POST {host}/task/openapi/getWebhookDetail
-{"apiKey": "...", "taskId": "..."}
+{"apiKey": "$RUNNINGHUB_API_KEY", "taskId": "..."}
 ```
 响应 `data`：`id`、`webhookUrl`、`eventData`、`callbackStatus`(SUCCESS/FAILED)、`callbackResponse`、`retryCount`、时间戳。任务未配置 webhook 时返回 `code:1 "webhook event not exists"`。
 
 ### 4.5 重发 webhook 事件
 ```
 POST {host}/task/openapi/retryWebhook
-{"apiKey": "...", "webhookId": "<4.4 返回的 id>", "webhookUrl": "https://..."}  // webhookUrl 可选，可改投递地址
+{"apiKey": "$RUNNINGHUB_API_KEY", "webhookId": "{4.4 返回的 id}", "webhookUrl": "https://..."}  // webhookUrl 可选，可改投递地址
 ```
 
 ### webhook 回调格式（平台 → 你的 URL，POST）
@@ -182,7 +183,7 @@ Content-Type: multipart/form-data; 字段名 file
 
 ### 6.1 获取账户信息
 ```
-POST {host}/uc/openapi/accountStatus   {"apikey": "<KEY>"}
+POST {host}/uc/openapi/accountStatus   {"apikey": "$RUNNINGHUB_API_KEY"}
 ```
 响应 `data`：`remainCoins`(RH 币)、`remainMoney`+`currency`(钱包余额)、`currentTaskCounts`、`apiType`(NORMAL 等)。
 
@@ -212,8 +213,8 @@ POST {host}/openapi/v2/resource/list
 
 把 RunningHub 当本地 ComfyUI 用（兼容 SillyTavern/Krita/EasyAI 等插件）：
 ```
-24G 显存: https://{host}/proxy/<apiKey>
-48G 显存: https://{host}/proxy-plus/<apiKey>
+24G 显存: https://{host}/proxy/{API_KEY_FROM_ENV}
+48G 显存: https://{host}/proxy-plus/{API_KEY_FROM_ENV}
 ```
 等同于 `http://127.0.0.1:8188` 的 ComfyUI 原生接口（/prompt、/history、WebSocket…）。模型需先在 RunningHub 模型库收藏。
 
@@ -223,7 +224,7 @@ POST {host}/openapi/v2/resource/list
 
 ```
 POST https://llm.runninghub.cn/v1/chat/completions
-Authorization: Bearer <企业级-共享 KEY>
+Authorization: Bearer $RUNNINGHUB_API_KEY
 {"model": "glm-5.2", "messages": [...], "max_tokens": 2048}
 ```
 仅国内站 `llm.runninghub.cn`，仅企业级-共享 Key，兼容 OpenAI/Anthropic/Gemini 协议（`/v1/chat/completions` 等）。
@@ -233,4 +234,4 @@ Authorization: Bearer <企业级-共享 KEY>
 ## 参考来源与实测说明
 
 - 文档：https://www.runninghub.cn/runninghub-api-doc-cn/（任务状态/输出 v1 已标弃用，推荐 v2 query）
-- 本表全部端点已于 2026-09 在 `www.runninghub.ai` 实测通过（模型 API 与 AI 应用受 Key 权限限制验证到错误码层面：1014/901）。
+- 接口和模型目录会随平台更新；调用前以 `rh.py models` 和平台当前响应为准。

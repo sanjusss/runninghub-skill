@@ -19,11 +19,19 @@ import argparse
 import concurrent.futures as cf
 import datetime as dt
 import json
+import os
 import re
 import sys
+import time
+import urllib.error
+import urllib.parse
 import urllib.request
+from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:
+    raise SystemExit("PyYAML is required: python3 -m pip install PyYAML") from None
 
 DOC_INDEX = "/runninghub-api-doc-cn/llms.txt"
 
@@ -31,6 +39,9 @@ DOC_INDEX = "/runninghub-api-doc-cn/llms.txt"
 # else in the index (AI 应用, ComfyUI 工作流, 任务查询, 资源上传, 账户相关...)
 # is a fixed platform API documented in references/api-reference.md.
 MODEL_SECTIONS = ("模型API", "标准模型API")
+ALLOWED_HOSTS = ("www.runninghub.cn", "www.runninghub.ai")
+AUTH_QUERY_KEYS = {"rh-comfy-auth", "rh-identify", "q-ak", "q-signature"}
+URL_RE = re.compile(r"https?://[^\s<>\"']+")
 
 # The doc-tree breadcrumb (segment 3) is the authority for task naming; we
 # only normalise case/merges here. Verify against llms.txt before editing:
@@ -98,10 +109,58 @@ OUTPUT_TYPE_BY_TASK = {
 }
 
 
-def http_get(url: str, timeout: int = 60) -> bytes:
+def http_get(url: str, timeout: int = 60, attempts: int = 3) -> bytes:
+    """Retry only documentation GET requests, which have no external side effects."""
     req = urllib.request.Request(url, headers={"User-Agent": "runninghub-skill-builder/1.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return resp.read()
+    for attempt in range(1, attempts + 1):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429 and exc.code < 500:
+                raise
+            if attempt == attempts:
+                raise
+            time.sleep(attempt)
+        except (urllib.error.URLError, TimeoutError):
+            if attempt == attempts:
+                raise
+            time.sleep(attempt)
+    raise RuntimeError("unreachable")
+
+
+def strip_authenticated_query(url: str) -> str:
+    parsed = urllib.parse.urlsplit(url)
+    keys = {k.lower() for k, _ in urllib.parse.parse_qsl(parsed.query,
+                                                         keep_blank_values=True)}
+    if keys & AUTH_QUERY_KEYS:
+        return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, parsed.path, "", ""))
+    return url
+
+
+def sanitize_text(value: str) -> str:
+    return URL_RE.sub(lambda match: strip_authenticated_query(match.group(0)), value)
+
+
+def sanitize_registry(value):
+    """Remove unusable examples and authenticated query strings from registry data."""
+    if isinstance(value, dict):
+        cleaned = {k: sanitize_registry(v) for k, v in value.items()}
+        if cleaned.get("type") in ("STRING", "FILE", "ARRAY"):
+            cleaned.pop("default", None)
+        return cleaned
+    if isinstance(value, list):
+        return [sanitize_registry(v) for v in value]
+    if isinstance(value, str):
+        return sanitize_text(value)
+    return value
+
+
+def positive_int(value: str) -> int:
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError("must be at least 1")
+    return number
 
 
 def parse_index(host: str) -> list[dict]:
@@ -157,14 +216,15 @@ def parse_param(name: str, prop: dict, required: set[str]) -> dict:
         p["options"] = [str(v) for v in prop["enum"]]
     if prop.get("items") and isinstance(prop["items"], dict) and prop["items"].get("type"):
         p["itemType"] = prop["items"]["type"]
-    if "default" in prop and prop["default"] is not None:
+    if p["type"] in ("LIST", "BOOL", "NUMBER") \
+            and "default" in prop and prop["default"] is not None:
         p["default"] = prop["default"]
     if "minLength" in prop:
         p["minLength"] = prop["minLength"]
     if "maxLength" in prop:
         p["maxLength"] = prop["maxLength"]
     if prop.get("description"):
-        p["description"] = str(prop["description"])[:300]
+        p["description"] = sanitize_text(str(prop["description"])[:300])
     if name in required:
         p["required"] = True
     return p
@@ -206,7 +266,7 @@ def parse_endpoint(entry: dict) -> dict | None:
     vendor = crumbs[3] if len(crumbs) > 3 else ""
     ep_id = path.removeprefix("/openapi/v2/")
     if ep_id in EXCLUDED_ENDPOINTS or subtask in EXCLUDED_SUBTASKS:
-        return None
+        return {}
     task = EXPLICIT_TASK_OVERRIDE.get(ep_id) or TASK_BY_BREADCRUMB.get(subtask, subtask or "other")
     return {
         "endpoint": ep_id,
@@ -215,7 +275,7 @@ def parse_endpoint(entry: dict) -> dict | None:
         "outputType": OUTPUT_TYPE_BY_TASK.get(task, "other"),
         "category": category,
         "vendor": vendor,
-        "description": entry["blurb"] or str(op.get("description") or "")[:400],
+        "description": sanitize_text(entry["blurb"] or str(op.get("description") or "")[:400]),
         "params": params,
         "docUrl": entry["doc_path"].removesuffix(".md"),
     }
@@ -223,9 +283,11 @@ def parse_endpoint(entry: dict) -> dict | None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--host", default="www.runninghub.cn")
-    ap.add_argument("--out", default=str(__import__("pathlib").Path(__file__).resolve().parent.parent / "data" / "models.json"))
-    ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--host", default="www.runninghub.cn", choices=ALLOWED_HOSTS)
+    ap.add_argument("--out", default=str(Path(__file__).resolve().parent.parent / "data" / "models.json"))
+    ap.add_argument("--workers", type=positive_int, default=16)
+    ap.add_argument("--allow-partial", action="store_true",
+                    help="write a registry even when some documentation pages fail")
     args = ap.parse_args()
 
     entries = parse_index(args.host)
@@ -238,26 +300,44 @@ def main() -> None:
             e = futures[fut]
             try:
                 ep = fut.result()
-                if ep:
-                    endpoints.append(ep)
-                else:
+                if ep is None:
                     failures.append(e["title"])
+                elif ep:
+                    endpoints.append(ep)
             except Exception as exc:  # noqa: BLE001
                 failures.append(f'{e["title"]}: {exc}')
 
     endpoints.sort(key=lambda x: (x["task"], x["endpoint"]))
-    registry = {
+    if failures:
+        print(f"failed pages: {len(failures)}", file=sys.stderr)
+        for title in failures[:20]:
+            print(f"  FAILED: {title}", file=sys.stderr)
+        if not args.allow_partial:
+            raise SystemExit("registry not replaced; rerun after the documentation fetch succeeds")
+    if not endpoints:
+        raise SystemExit("registry not replaced: no model endpoints were parsed")
+    endpoint_ids = [e["endpoint"] for e in endpoints]
+    if len(endpoint_ids) != len(set(endpoint_ids)):
+        raise SystemExit("registry not replaced: duplicate model endpoints")
+    registry = sanitize_registry({
         "version": 2,
         "builtAt": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "source": f"https://{args.host}{DOC_INDEX}",
         "total": len(endpoints),
         "endpoints": endpoints,
-    }
-    with open(args.out, "w", encoding="utf-8") as f:
-        json.dump(registry, f, ensure_ascii=False, indent=1)
+    })
+    encoded = json.dumps(registry, ensure_ascii=False, indent=1) + "\n"
+    if re.search(r"(?:Rh-Comfy-Auth|Rh-Identify|q-ak|q-signature)=", encoded, re.I):
+        raise SystemExit("registry not replaced: authenticated URL remained after sanitizing")
+    out = Path(args.out).expanduser().resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    temporary = out.with_name(f".{out.name}.{os.getpid()}.tmp")
+    try:
+        temporary.write_text(encoded, encoding="utf-8")
+        os.replace(temporary, out)
+    finally:
+        temporary.unlink(missing_ok=True)
     print(f"wrote {args.out}: {len(endpoints)} endpoints, {len(failures)} failures", file=sys.stderr)
-    for title in failures[:10]:
-        print(f"  FAILED: {title}", file=sys.stderr)
 
 
 if __name__ == "__main__":

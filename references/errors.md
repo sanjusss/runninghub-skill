@@ -2,6 +2,8 @@
 
 ## 通用排查顺序
 
+任务查询和文档下载可以有限重试。`workflow`、`app`、`model` 会创建收费任务；收到网络异常但没有明确失败响应时，不要自动重新提交，以免生成重复任务。
+
 1. **401 / "API Key 不存在" / 1002 / 802** → key 错或站点不对（.cn 的 key 打不通 .ai）。换 `--host` 重试，或 `rh.py apikeys` 确认。
 2. **1014** → 标准模型 API 仅企业级-共享 Key。`rh.py queue` 看 `apiKeyType`。
 3. **301 PARAMS_INVALID / 1007** → 参数缺失或类型不符。`rh.py models --info <endpoint>` 或 `workflow-json` 核对字段名/枚举值。

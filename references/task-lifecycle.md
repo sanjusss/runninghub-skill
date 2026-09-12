@@ -12,18 +12,20 @@
 
 ```bash
 # 1) 提交并等待，成功后返回 results[].url，不下载文件
-python3 scripts/rh.py workflow 1904136902449209346 --node "6:text=a cat" --timeout 600
+rh.py workflow 1904136902449209346 --node "6:text=a cat" --timeout 600
 
 # 2) 需要下载时，显式传入用户工作区中的输出目录
-python3 scripts/rh.py workflow 1904136902449209346 --node "6:text=a cat" \
+rh.py workflow 1904136902449209346 --node "6:text=a cat" \
   --timeout 600 --outdir "$PWD/outputs/runninghub"
 
 # 3) 或者分步：先拿 taskId（--no-wait），稍后等待
-python3 scripts/rh.py workflow 1904136902449209346 --no-wait
-python3 scripts/rh.py task-wait 1900000000000000001 --timeout 900
+rh.py workflow 1904136902449209346 --no-wait
+rh.py task-wait 1900000000000000001 --timeout 900
 ```
 
 `rh.py` 默认每 3 秒轮询一次 `/openapi/v2/query`，stderr 打印进度行。任务成功后，脚本默认原样返回 `results`。传入 `--outdir` 时，脚本才会把每个 `results[].url` 下载为 `<outdir>/<taskId>_<序号>.<扩展名>`，并在 JSON 里增加 `localPath`。
+
+下载先写入 `.part` 文件，完成后再原子替换。目标文件已经存在时默认报错；确认需要替换后才使用 `--overwrite`。下载失败会写入 `downloadError` 并返回退出码 1。
 
 ## 轮询策略建议
 
@@ -36,6 +38,7 @@ python3 scripts/rh.py task-wait 1900000000000000001 --timeout 900
 
 - 冷启动排队可能把时间翻倍；同一工作流连续提交会复用实例（实测第二次同工作流仅 8 秒）。企业级-共享 Key 可用 `retainSeconds`(10–180) 显式保温。
 - 轮询超时≠任务失败：exit code 3 只表示没等到，任务还在跑，稍后继续 `task-wait`。
+- 轮询遇到临时网络错误会有限重试；创建收费任务的请求不会自动重试。
 - 并发上限看 Key：`rh.py queue`（消费级一般并发 2）。达到上限提交会报 `421 TASK_QUEUE_MAXED`，等几秒重试。
 
 ## 结果获取的三条路
@@ -68,14 +71,14 @@ python3 scripts/rh.py task-wait 1900000000000000001 --timeout 900
 投递失败会自动重试（实测字段 `retryCount`）；排查与补发：
 
 ```bash
-python3 scripts/rh.py webhook-detail <taskId>      # 看 callbackStatus/callbackResponse/retryCount
-python3 scripts/rh.py webhook-retry <webhookId> --url https://new-hook/   # webhookId 来自上一条
+rh.py webhook-detail <taskId>      # 看 callbackStatus/callbackResponse/retryCount
+rh.py webhook-retry <webhookId> --url https://new-hook/   # webhookId 来自上一条
 ```
 
 ## 取消与退款
 
 ```bash
-python3 scripts/rh.py task-cancel <taskId>
+rh.py task-cancel <taskId>
 ```
 
 排队/运行中均可取消（成功 `code:0`）。**提交错参数的任务应立刻取消**，避免无谓消耗；取消是否部分计费以 `usage.consumeCoins` 实际查询为准。
