@@ -38,7 +38,8 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --key <APIKEY> --host <www
 | 跑标准模型（可灵/海螺/seedream…） | `rh.py model <endpoint> --prompt ... --param k=v` |
 | 搜可用模型 | `rh.py models --task text-to-video --kw kling`（详情 `--info <endpoint>`） |
 | 查任务（推荐 v2） | `rh.py task-query <taskId>` |
-| 等任务完成并下载 | `rh.py task-wait <taskId> --outdir .` |
+| 等任务完成并返回结果 URL | `rh.py task-wait <taskId>` |
+| 等任务完成并下载 | `rh.py task-wait <taskId> --outdir <绝对目录>` |
 | 查任务（v1 带消费明细） | `rh.py task-status` / `rh.py task-outputs` |
 | 取消任务 | `rh.py task-cancel <taskId>` |
 | 上传图片/音频/视频/zip | `rh.py upload <file>` |
@@ -57,7 +58,7 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --key <APIKEY> --host <www
 提交任务 → taskId → 轮询状态(QUEUED/RUNNING) → SUCCESS(拿 results[].url) / FAILED(拿 errorCode)
 ```
 
-`rh.py` 的 `workflow`/`app`/`model`/`task-wait` 命令已内置"提交+轮询+下载"，一次完成；加 `--no-wait` 可只提交。
+`rh.py` 的 `workflow`/`app`/`model` 命令默认提交任务并等待完成，`task-wait` 用于等待已有任务。任务成功后默认返回 `results[].url`，不下载文件；传入 `--outdir <目录>` 才会下载并在结果中增加 `localPath`。加 `--no-wait` 可只提交任务。
 
 ## 按场景深入（按需阅读）
 
@@ -76,7 +77,7 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --key <APIKEY> --host <www
 ## 关键注意事项
 
 1. **Key 类型决定能力**：标准模型 API 仅限"企业级-共享"Key（报 1014 就是 Key 类型不对）；消费级/会员 Key 只能跑 AI 应用和工作流。详见 `references/account-and-keys.md`。
-2. **任务花真钱**：提交前可用 `rh.py account` 查余额；提错任务立刻 `rh.py task-cancel`。结果 URL 有效期约 1 天（国际站实测），拿到就下载。
+2. **任务花真钱**：提交前可用 `rh.py account` 查余额；提错任务立刻 `rh.py task-cancel`。结果 URL 有效期约 1 天（国际站实测）。需要保留文件时，传入指向用户工作区的绝对 `--outdir`；不要把最终产物保存到临时目录。
 3. **v1 查询接口的语义陷阱**：`/task/openapi/outputs` 在任务运行中会返回 `code:804`、排队中返回 `813`——这不是失败，是状态信号。优先用 v2 `task-query`。
 4. **seed 会被强制随机**：API 调用会重置 seed，需要固定 seed 就必须写进 nodeInfoList。
 5. **图片识别**：需要识别/检查生成图片或用户上传图片时，按 `references/image-analysis.md` 用具备视觉能力的子代理。RunningHub 图生文端点当前已从官方模型目录下线，若要走 API 备选路线，先 `rh.py models --task image-to-text` 实时确认可用再调用。

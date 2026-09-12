@@ -3,7 +3,7 @@
 所有 RunningHub 生成任务（工作流 / AI 应用 / 标准模型）走同一条生命周期：
 
 ```
-提交 → taskId → [QUEUED] → RUNNING → SUCCESS(下载 results) 或 FAILED(读 errorCode/failedReason)
+提交 → taskId → [QUEUED] → RUNNING → SUCCESS(返回 results) 或 FAILED(读 errorCode/failedReason)
 ```
 
 状态机：`CREATE → QUEUED → RUNNING → SUCCESS | FAILED`（v2 query 只报 QUEUED/RUNNING/SUCCESS/FAILED 四种）。
@@ -11,15 +11,19 @@
 ## 标准操作序列（推荐）
 
 ```bash
-# 1) 提交并阻塞等待 + 自动下载（workflow/app/model/task-wait 均内置）
-python3 scripts/rh.py workflow 1904136902449209346 --node "6:text=a cat" --timeout 600 --outdir ./out
+# 1) 提交并等待，成功后返回 results[].url，不下载文件
+python3 scripts/rh.py workflow 1904136902449209346 --node "6:text=a cat" --timeout 600
 
-# 2) 或者分步：先拿 taskId（--no-wait），稍后轮询
+# 2) 需要下载时，显式传入用户工作区中的输出目录
+python3 scripts/rh.py workflow 1904136902449209346 --node "6:text=a cat" \
+  --timeout 600 --outdir "$PWD/outputs/runninghub"
+
+# 3) 或者分步：先拿 taskId（--no-wait），稍后等待
 python3 scripts/rh.py workflow 1904136902449209346 --no-wait
-python3 scripts/rh.py task-wait 1900000000000000001 --timeout 900 --outdir ./out
+python3 scripts/rh.py task-wait 1900000000000000001 --timeout 900
 ```
 
-`rh.py` 默认 3 秒轮询一次 `/openapi/v2/query`，stderr 打印进度行，SUCCESS 后把每个 `results[].url` 下载为 `<outdir>/<taskId>_<序号>.<扩展名>` 并在 JSON 里附 `localPath`。
+`rh.py` 默认每 3 秒轮询一次 `/openapi/v2/query`，stderr 打印进度行。任务成功后，脚本默认原样返回 `results`。传入 `--outdir` 时，脚本才会把每个 `results[].url` 下载为 `<outdir>/<taskId>_<序号>.<扩展名>`，并在 JSON 里增加 `localPath`。
 
 ## 轮询策略建议
 
@@ -42,7 +46,7 @@ python3 scripts/rh.py task-wait 1900000000000000001 --timeout 900 --outdir ./out
 | `POST /task/openapi/outputs`（`task-outputs`） | 需要**每个输出节点的明细**（nodeId、taskCostTime、consumeCoins） | v1 已弃用；运行中返回 `code:804`、排队 `813`——这是状态不是错误 |
 | `POST /task/openapi/status`（`task-status`） | 只要状态字符串 | v1 已弃用 |
 
-**结果 URL 有效期约 1 天**（上传的 download_url 同理），拿到立刻下载；需要长期保存自行转存。
+**结果 URL 有效期约 1 天**（上传的 download_url 同理）。需要长期保存时，使用 `--outdir` 下载到用户工作区或自行转存；不要把最终产物保存在临时目录。
 
 失败时 v2 query 的 `failedReason` 内含 `exception_type`、`node_id`、`traceback`（v1 outputs 的 805 响应里也有），定位到具体节点后对照修改 nodeInfoList。
 

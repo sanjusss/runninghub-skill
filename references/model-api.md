@@ -25,7 +25,7 @@ python3 scripts/rh.py models --info kling-video-o3-pro/text-to-video   # 某模�
 ## 2. 调用
 
 ```bash
-python3 scripts/rh.py model <endpoint> --prompt "..." --param k=v ... --timeout 1800 --outdir ./out
+python3 scripts/rh.py model <endpoint> --prompt "..." --param k=v ... --timeout 1800
 ```
 
 - `--prompt` 对应模型的 prompt 参数；TTS 等个别模型的主参数名是 `text`，用 `--param text=...` 传
@@ -33,7 +33,7 @@ python3 scripts/rh.py model <endpoint> --prompt "..." --param k=v ... --timeout 
 - `--param k=true/false`：BOOL 型参数自动转布尔；枚举型参数按文档以字符串发送
 - `--param k=数字`：数值型（NUMBER）参数转 JSON 数字；枚举型参数（如 `duration=5`）保持字符串，与文档枚举一致
 - 参数值传本地文件路径（`--param image=@/path/photo.png`）会**自动先上传**并把返回的 `download_url` 填入；`@` 指向的文件不存在会报错
-- 提交响应就可能直接是 SUCCESS（快任务），否则脚本自动轮询到结束并下载
+- 提交响应就可能直接是 SUCCESS（快任务），否则脚本自动轮询到结束；默认返回结果 URL，传入 `--outdir <绝对目录>` 才下载
 
 原始 HTTP：
 ```
@@ -50,7 +50,7 @@ POST https://{host}/openapi/v2/<endpoint>
 
 ## 4. 输出与花费
 
-- `results[].url` 为结果文件（视频 mp4 / 图片 jpg/png / 音频 mp3 / 3D glb 等），`outputType` 标类型；`rh.py` 自动按扩展名下载
+- `results[].url` 为结果文件（视频 mp4 / 图片 jpg/png / 音频 mp3 / 3D glb 等），`outputType` 标类型；需要本地文件时，传入 `--outdir <绝对目录>`，`rh.py` 会按扩展名下载
 - `usage.consumeCoins` 是本次消耗（RH 币）；批量前先 `rh.py account` 查余额
 - 内容审核不通过报 `1501/1505`（改提示词或换图）；真人相关模型有额外限制
 

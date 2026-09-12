@@ -25,7 +25,7 @@ python3 scripts/rh.py app-demo 1877265245566922800
 python3 scripts/rh.py app <webappId> \
   --node "122:prompt=一个在教室里的金发女孩" \
   --node "123:image=openapi/61432a….png" \
-  --password 访问密码 --timeout 1800 --outdir ./out
+  --password 访问密码 --timeout 1800
 ```
 
 端点：`POST /task/openapi/ai-app/run`，体：`apiKey`、`webappId`（JSON 数字，不是字符串；`rh.py app` 已自动转换）、`nodeInfoList`、可选 `webhookUrl`/`instanceType`/`accessPassword`。
@@ -38,7 +38,7 @@ python3 scripts/rh.py app <webappId> \
 
 ## 4. 查结果
 
-与工作流完全一致（`task-wait`/`task-query`），见 `task-lifecycle.md`。AI 应用往往一分钟以上，`--timeout 1800` 稳妥。
+与工作流完全一致（`task-wait`/`task-query`），见 `task-lifecycle.md`。AI 应用往往一分钟以上，`--timeout 1800` 稳妥。任务成功后默认返回结果 URL；需要下载时传入 `--outdir <绝对目录>`。
 
 ## 5. 找"有什么应用"
 

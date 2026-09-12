@@ -88,10 +88,10 @@ LoRA（仅 `RHLoraLoader` 节点）：`rh.py upload-lora my.safetensors` 一步�
 ## 7. 端到端验证过的例子
 
 ```bash
-# 提交（替换提示词与 seed）→ 32 秒 SUCCESS → 消耗 7 RH 币 → 自动下载 PNG
+# 提交（替换提示词与 seed）→ 32 秒 SUCCESS → 消耗 7 RH 币 → 返回结果 URL
 python3 scripts/rh.py workflow 1904136902449209346 \
   --node "6:text=a tiny robot painting a wall mural, colorful" \
-  --node "3:seed=777" --outdir /tmp/out
+  --node "3:seed=777"
 ```
 
 常见错误：`380 WORKFLOW_NOT_EXISTS`（ID 错/非本站）、`810 WORKFLOW_NOT_SAVED_OR_NOT_RUNNING`（需先在网页保存并手动运行过一次）、`803 APIKEY_INVALID_NODE_INFO`（nodeId/fieldName 与工作流不匹配——用 workflow-json 重新核对）。

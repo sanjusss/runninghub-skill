@@ -5,7 +5,7 @@ Python 3.9+ standard library only — no pip installs required.
 
 Coverage
   Platform   : account / api-keys / queue status / public ComfyUI model list
-  Tasks      : v2 query, v1 status & outputs, cancel, wait-and-download
+  Tasks      : v2 query, v1 status & outputs, cancel, wait and optional download
   Workflows  : run (simple/advanced nodeInfoList), fetch API-format JSON
   AI apps    : run, fetch API call demo (nodeInfoList template)
   Models     : search registry, show params, run any 标准模型 API endpoint
@@ -306,7 +306,9 @@ def run_and_deliver(key: str, host: str, task_id: str, args) -> None:
     out = {"taskId": final.get("taskId"), "status": final.get("status"),
            "usage": final.get("usage"), "promptTips": final.get("promptTips")}
     if final.get("status") == "SUCCESS":
-        out["results"] = download_results(final.get("results"), args.outdir, task_id)
+        results = final.get("results") or []
+        out["results"] = (download_results(results, args.outdir, task_id)
+                          if args.outdir else results)
     else:
         out["errorCode"] = final.get("errorCode")
         out["errorMessage"] = final.get("errorMessage")
@@ -555,10 +557,10 @@ def cmd_task_query(args):
 def cmd_task_outputs(args):
     key, host = resolve_key(args), resolve_host(args)
     resp = api_v1(key, host, "/task/openapi/outputs", {"taskId": args.task_id})
+    if resp.get("code") == 0 and args.outdir and resp.get("data"):
+        resp = dict(resp)
+        resp["data"] = download_results(resp["data"], args.outdir, args.task_id)
     emit(resp)  # 804/813/805 envelopes are informative, not fatal
-    if resp.get("code") == 0 and args.download and (resp.get("data")):
-        print(json.dumps(download_results(resp["data"], args.outdir, args.task_id),
-                         ensure_ascii=False, indent=2))
 
 
 def cmd_task_cancel(args):
@@ -601,7 +603,8 @@ def add_run_options(p: argparse.ArgumentParser, default_timeout: float = 900,
     p.add_argument("--timeout", type=float, default=default_timeout,
                    help="max seconds to poll (default 900)")
     p.add_argument("--quiet", action="store_true", help="no per-poll status lines")
-    p.add_argument("--outdir", default=".", help="directory for downloaded outputs")
+    p.add_argument("--outdir",
+                   help="download outputs to this directory (default: return URLs only)")
 
 
 def add_global(p: argparse.ArgumentParser, suppress: bool = False) -> None:
@@ -698,13 +701,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = cmd("task-outputs", cmd_task_outputs, "v1 outputs (per-node fileUrl + cost detail)")
     p.add_argument("task_id")
-    p.add_argument("--download", action="store_true")
-    p.add_argument("--outdir", default=".")
+    p.add_argument("--outdir",
+                   help="download outputs to this directory (default: return URLs only)")
 
     p = cmd("task-cancel", cmd_task_cancel, "cancel a queued/running task")
     p.add_argument("task_id")
 
-    p = cmd("task-wait", cmd_task_wait, "poll v2 query until done, then download outputs")
+    p = cmd("task-wait", cmd_task_wait, "poll v2 query until done; optionally download outputs")
     p.add_argument("task_id")
     add_run_options(p, 900, include_no_wait=False)
 

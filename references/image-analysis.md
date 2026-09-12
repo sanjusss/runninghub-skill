@@ -6,11 +6,11 @@
 
 当前 agent 环境支持派生子代理且子代理具备视觉能力时（例如 ZCode 子代理 + GLM-5.3-Flash 等视觉模型）：
 
-1. 确保图片已在本地（`rh.py` 的 `--outdir` 已自动下载，JSON 里有 `localPath`）
+1. 运行生成命令时传入用户工作区中的绝对 `--outdir`，下载图片后 JSON 里会有 `localPath`
 2. 派生一个子代理（Agent 工具），把图片绝对路径与具体问题写进任务描述，例如：
 
 ```
-子代理任务：请识别 /tmp/out/1900000000000000001_0.png 的内容：
+子代理任务：请识别 /path/to/project/outputs/runninghub/1900000000000000001_0.png 的内容：
 画面主体是什么？是否符合提示词"a tiny robot painting a wall mural"？
 用一句中文总结，并给出 1-10 分的符合度评分。
 ```
