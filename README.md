@@ -67,6 +67,6 @@ RunningHub 上新模型后重跑（需 PyYAML + 网络）：
 python3 scripts/build_models_registry.py
 ```
 
-构建器会删除文档中的输入文件示例和签名 URL 参数。任何文档页面读取失败时，默认保留现有目录，不写入不完整结果。定时任务由 GitHub Actions 执行，底模映射需人工维护、由 `check-basemodels` workflow 发现差异后开 issue 提醒。
+构建器会删除文档中的输入文件示例和签名 URL 参数。任何文档页面读取失败时，默认保留现有目录，不写入不完整结果。重建结果与现有文件一致时（忽略 `builtAt` 时间戳）保留现有文件，定时任务不会因此产生空 PR。定时任务由 GitHub Actions 执行，底模映射需人工维护、由 `check-basemodels` workflow 发现差异后开 issue 提醒。
 
 官方 API 文档：https://www.runninghub.cn/runninghub-api-doc-cn/

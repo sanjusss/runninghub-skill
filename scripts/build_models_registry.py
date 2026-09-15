@@ -12,6 +12,10 @@ Run from anywhere:  python3 build_models_registry.py [--host www.runninghub.cn]
 The registry is committed under data/ so that the skill itself never needs
 PyYAML or network access to list models — rerun this script only when
 RunningHub publishes new models.
+
+If the rebuilt registry matches the existing output file (ignoring the
+builtAt timestamp), the file is left untouched so that scheduled rebuilds
+don't produce empty diffs.
 """
 from __future__ import annotations
 
@@ -330,6 +334,16 @@ def main() -> None:
     if re.search(r"(?:Rh-Comfy-Auth|Rh-Identify|q-ak|q-signature)=", encoded, re.I):
         raise SystemExit("registry not replaced: authenticated URL remained after sanitizing")
     out = Path(args.out).expanduser().resolve()
+    try:
+        existing = json.loads(out.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        existing = None
+    if isinstance(existing, dict) and \
+            {k: v for k, v in existing.items() if k != "builtAt"} == \
+            {k: v for k, v in registry.items() if k != "builtAt"}:
+        print(f"unchanged: {len(endpoints)} endpoints; keeping {out} "
+              f"(builtAt {existing.get('builtAt')})", file=sys.stderr)
+        return
     out.parent.mkdir(parents=True, exist_ok=True)
     temporary = out.with_name(f".{out.name}.{os.getpid()}.tmp")
     try:
