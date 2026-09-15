@@ -101,4 +101,6 @@ python3 <skill目录>/scripts/rh.py <命令> [参数] --host <www.runninghub.cn|
 python3 <skill目录>/scripts/build_models_registry.py
 ```
 
+仓库已接入 GitHub Actions：每天自动重建 `data/models.json`，内容有变化时自动开 Pull Request；并每天对比 RunningHub 底模枚举，发现新底模时自动开 issue，提醒维护者更新 `data/basemodel_map.json`。
+
 官方文档：https://www.runninghub.cn/runninghub-api-doc-cn/ （国际站同路径）。平台网页操作手册（非 API）：https://runninghub.feishu.cn/wiki/Vc77w5EaUirOY5kyTQNcrr7GnUd

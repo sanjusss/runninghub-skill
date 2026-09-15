@@ -55,6 +55,8 @@ scripts/build_models_registry.py# 从官方文档重建 data/models.json
 data/models.json                # 标准模型端点目录（参数、枚举、安全默认值）
 data/basemodel_map.json         # RunningHub 底模 → Civitai baseModel 允许集与血统权重
 references/                     # 10 份按需加载的深度文档（API 参考/任务生命周期/错误码/Civitai LoRA 同步等）
+.github/workflows/update-models.yml     # 每天自动重建 data/models.json 并开 PR
+.github/workflows/check-basemodels.yml  # 每天对比底模枚举，键不一致时开 issue 提醒
 ```
 
 ## 数据维护
@@ -65,6 +67,6 @@ RunningHub 上新模型后重跑（需 PyYAML + 网络）：
 python3 scripts/build_models_registry.py
 ```
 
-构建器会删除文档中的输入文件示例和签名 URL 参数。任何文档页面读取失败时，默认保留现有目录，不写入不完整结果。
+构建器会删除文档中的输入文件示例和签名 URL 参数。任何文档页面读取失败时，默认保留现有目录，不写入不完整结果。定时任务由 GitHub Actions 执行，底模映射需人工维护、由 `check-basemodels` workflow 发现差异后开 issue 提醒。
 
 官方 API 文档：https://www.runninghub.cn/runninghub-api-doc-cn/

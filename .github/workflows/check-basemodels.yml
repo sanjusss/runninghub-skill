@@ -1,0 +1,86 @@
+name: Check base model keys
+
+on:
+  schedule:
+    - cron: "41 3 * * *" # UTC 每天 03:41
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Check keys and open an issue on drift
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 运行检查脚本：stdout 存入文件（退出码 0 时原样输出，退出码 1 时贴进 issue 正文）；
+          # stderr 不重定向，直接透传到 job 日志。
+          # set +e：退出码 1/2 是预期分支，不能让 `set -e` 在这里中断，先把退出码存下来再分支处理。
+          set +e
+          python3 scripts/check_basemodel_keys.py > /tmp/basemodel_diff.txt
+          code=$?
+          set -e
+
+          if [ "$code" -eq 0 ]; then
+            # 键集合完全一致：原样输出并正常结束
+            cat /tmp/basemodel_diff.txt
+            exit 0
+          fi
+
+          if [ "$code" -eq 2 ]; then
+            # 网络或解析失败：让 job 失败，不开 issue
+            echo "check_basemodel_keys.py failed (network or parse error), see stderr above" >&2
+            exit 1
+          fi
+
+          if [ "$code" -ne 1 ]; then
+            echo "unexpected exit code from check_basemodel_keys.py: $code" >&2
+            exit 1
+          fi
+
+          # 退出码 1：键集合存在差异。打印明细，并按需开 issue 提醒人工补映射。
+          cat /tmp/basemodel_diff.txt
+
+          # 确保标签存在（`--force`：标签已存在时更新它）
+          gh label create basemodel-map --force
+
+          # 查重：已有未关闭的同类 issue 时只记日志，不重复开
+          open_issues=$(gh issue list --repo "$GITHUB_REPOSITORY" \
+            --label basemodel-map --state open --json number --jq 'length')
+          if [ "$open_issues" -gt 0 ]; then
+            echo "an open issue labeled basemodel-map already exists, skip creating a new one"
+            exit 0
+          fi
+
+          # 生成中文 issue 正文：贴上差异明细，并指引维护者按第 9 节补映射
+          {
+            echo '定时检查发现 `data/basemodel_map.json` 的键与 RunningHub 平台底模枚举不一致，需要人工补充映射。本 workflow 不会自动修改该文件。'
+            echo
+            echo '`scripts/check_basemodel_keys.py` 输出的差异明细：'
+            echo
+            echo '```'
+            cat /tmp/basemodel_diff.txt
+            echo '```'
+            echo
+            echo '处理指引：'
+            echo '- 按 `references/civitai-lora-sync.md` 第 9 节补充映射，并更新 `data/basemodel_map.json`'
+            echo '- `added`：平台已提供、文件中缺失的底模枚举'
+            echo '- `removed`：文件中已有、平台已下架的底模枚举'
+            echo '- `host mismatch`：www.runninghub.cn 与 www.runninghub.ai 两站的枚举不一致'
+            echo
+            echo '更新完成后请关闭本 issue。'
+          } > /tmp/issue_body.md
+
+          gh issue create --repo "$GITHUB_REPOSITORY" \
+            --title "basemodel_map.json 键与平台底模枚举不一致" \
+            --label basemodel-map \
+            --body-file /tmp/issue_body.md

@@ -446,15 +446,27 @@ def run_and_deliver(key: str, host: str, task_id: str, args) -> None:
 # Models registry
 # ---------------------------------------------------------------------------
 
+REGISTRY_MAX_AGE_DAYS = 30
+
+
 def load_registry() -> dict:
     if not REGISTRY_PATH.exists():
         print(f"models registry missing: {REGISTRY_PATH}\n"
               "rebuild with: python3 scripts/build_models_registry.py", file=sys.stderr); sys.exit(2)
     try:
-        return json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+        reg = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         print(f"cannot read models registry {REGISTRY_PATH}: {exc}", file=sys.stderr)
         sys.exit(2)
+    try:
+        built_at = datetime.datetime.fromisoformat(reg.get("builtAt"))
+        age_days = (datetime.datetime.now(datetime.timezone.utc) - built_at).days
+        if age_days > REGISTRY_MAX_AGE_DAYS:
+            print(f"models registry is {age_days} days old; "
+                  "rebuild: python3 scripts/build_models_registry.py", file=sys.stderr)
+    except (TypeError, ValueError):
+        pass
+    return reg
 
 
 def registry_matches(reg: dict, kw: str | None, task: str | None) -> list[dict]:

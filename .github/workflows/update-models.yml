@@ -1,0 +1,68 @@
+name: Update models registry
+
+on:
+  schedule:
+    # 每天 UTC 03:23 重建一次模型目录
+    - cron: "23 3 * * *"
+  # 支持手动触发，用于验证 workflow 是否正常
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: update-models
+  cancel-in-progress: false
+
+jobs:
+  update:
+    name: 重建模型目录
+    runs-on: ubuntu-latest
+    steps:
+      # 检出仓库；checkout 默认保留 GITHUB_TOKEN 凭证，后续 git push 可直接使用
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: 安装 PyYAML
+        run: pip install PyYAML
+
+      # 从官方文档抓取并重建 data/models.json。
+      # 任何文档页抓取失败时脚本以非零码退出，本 job 随之失败，后续步骤不会执行，
+      # 仓库中现有 data/models.json 保持不动。
+      - name: 重建 data/models.json
+        run: python3 scripts/build_models_registry.py
+
+      # 有变化才提交到固定分支 bot/models-registry 并开 PR，main 分支不被机器人直接修改
+      - name: 有变化时提交并创建 PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet data/models.json; then
+            echo "data/models.json 无变化，无需提交"
+            exit 0
+          fi
+
+          BRANCH="bot/models-registry"
+          TOTAL=$(python3 -c "import json; print(json.load(open('data/models.json'))['total'])")
+          DATE=$(date -u +%F)
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "$BRANCH"
+          git add data/models.json
+          git commit -m "chore: rebuild models registry (${TOTAL} endpoints, ${DATE})"
+          git push -f origin "$BRANCH"
+
+          PR_COUNT=$(gh pr list --state open --head "$BRANCH" --json number --jq 'length')
+          if [ "$PR_COUNT" -eq 0 ]; then
+            gh pr create \
+              --title "更新标准模型目录（${TOTAL} 个端点，${DATE}）" \
+              --body "此 PR 由 update-models workflow 自动生成：从 RunningHub 官方文档重建 data/models.json，当前共 ${TOTAL} 个模型端点（构建日期 ${DATE}，UTC）。"
+          else
+            echo "分支 ${BRANCH} 已有未合并 PR，本次推送已更新该 PR"
+          fi
