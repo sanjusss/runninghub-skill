@@ -1,6 +1,6 @@
 {
  "version": 2,
- "builtAt": "2026-09-15T11:14:33+00:00",
+ "builtAt": "2026-09-16T08:42:53+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
  "total": 356,
  "endpoints": [
@@ -12969,7 +12969,7 @@
     {
      "key": "speaker",
      "type": "STRING",
-     "description": "音色ID，从控制台音色库获取；参考：https://www.volcengine.com/docs/6561/1257544?lang=zh#豆包语音合成模型2-0-音色列表",
+     "description": "音色ID，从控制台音色库获取",
      "required": true
     },
     {
@@ -13073,6 +13073,89 @@
      "key": "explicit_dialect",
      "type": "STRING",
      "description": "指定方言；（需speaker为支持方言的音色，中文方言只支持拼音）"
+    },
+    {
+     "key": "context_texts",
+     "type": "STRING",
+     "maxLength": 500,
+     "description": "语音指令，仅豆包语音合成2.0音色支持；复刻音色指定 model 后不可用。该字段不参与计费。"
+    },
+    {
+     "key": "model",
+     "type": "LIST",
+     "options": [
+      "seed-tts-2.0-standard",
+      "seed-tts-2.0-expressive"
+     ],
+     "description": "仅复刻音色需要。standard 延时更优；expressive 支持语音指令。指定后不下发 context_texts。"
+    },
+    {
+     "key": "ssml",
+     "type": "STRING",
+     "maxLength": 2000,
+     "description": "SSML 文本，优先级高于 text。需 disable_markdown_filter=false。合成2.0/复刻2.0部分音色暂不支持。"
+    },
+    {
+     "key": "latex_parser",
+     "type": "LIST",
+     "options": [
+      "v2"
+     ],
+     "description": "LaTeX 朗读。取值 v2 时需同时 disable_markdown_filter=true。"
+    },
+    {
+     "key": "aigc_watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在合成结尾增加音频节奏标识。默认 false。"
+    },
+    {
+     "key": "disable_default_bit_rate",
+     "type": "BOOL",
+     "default": false,
+     "description": "为 true 后 bit_rate 可低于 64k（16000/32000）。仅 mp3 有效。"
+    },
+    {
+     "key": "section_id",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "多轮会话 ID，同一通电话多次合成传同一个 UUID。仅合成2.0/复刻2.0音色。"
+    },
+    {
+     "key": "tone_fidelity",
+     "type": "BOOL",
+     "default": false,
+     "description": "还原模式。仅复刻2.0、且合成与训练同语种；不支持跨语种和双向流。默认 false。"
+    },
+    {
+     "key": "aigc_metadata_enable",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在音频 header 写入 meta 隐式水印。支持 mp3/wav/ogg_opus。"
+    },
+    {
+     "key": "aigc_metadata_content_producer",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "合成服务提供者名称或编码。"
+    },
+    {
+     "key": "aigc_metadata_produce_id",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "内容制作编号。"
+    },
+    {
+     "key": "aigc_metadata_content_propagator",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "内容传播服务提供者名称或编码。"
+    },
+    {
+     "key": "aigc_metadata_propagate_id",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "内容传播编号。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-494858305"
