@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-09-16T08:42:53+00:00",
+ "builtAt": "2026-09-17T08:46:25+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 356,
+ "total": 362,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -10012,6 +10012,337 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183180"
+  },
+  {
+   "endpoint": "arklin/video-super-resolution",
+   "title": "arklin/视频超分补帧",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "ArkLin DetailX 视频超分（可选补帧），可将低清素材升至最高 4K；填写 tarfps 时可补帧至最高 60fps，不传则不补帧。专业版为生成式方案，细节更丰富但耗时更长；按输出规格（版本/分辨率/是否补帧及目标帧率）与输出时长计费。适合 AIGC 成片增强与片库统一交付规格。",
+   "params": [
+    {
+     "key": "videoUrl",
+     "type": "STRING",
+     "description": "待超分的源视频（必传，无默认）。支持 MP4、MOV。供应商侧无文件大小硬限制；RH 上传校验上限 500MB。源视频时长无硬限制，但过长会显著增加等待时间。建议：输出 4K 源片约 31s 内、2K 约 60s 内、1080p/720p 约 100s 内（该标准下约 1 小时超时窗口内容错更充足）。输出为 H.264；若开启补帧，体积大致与不补帧成倍数关系，码率由供应商按分辨率/帧率自适应。\n\n支持的文件格式：MP4, MOV.",
+     "required": true
+    },
+    {
+     "key": "mode",
+     "type": "LIST",
+     "options": [
+      "professional",
+      "standard"
+     ],
+     "default": "professional",
+     "description": "处理版本。professional=专业版/生成式方案，运行更长、清晰度与细节更多；standard=常规版。影响计费档位。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "720p",
+      "1080p",
+      "2k",
+      "4k"
+     ],
+     "default": "4k",
+     "description": "目标输出分辨率，仅支持 720p / 1080p / 2k / 4k。影响计费档位与建议源片时长。"
+    },
+    {
+     "key": "tarfps",
+     "type": "NUMBER",
+     "description": "目标输出帧率（补帧），可选。不传或为空=不补帧（请求不带 tarfps）。注意：填写 tarfps则按目标帧率分档；不填tarfps则按输入视频的帧率分档。若填写则为整数 [24, 60]。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516250202"
+  },
+  {
+   "endpoint": "bytedance/doubao-seed-icl-2.0",
+   "title": "Doubao-声音复刻-2.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "用已训练的后付费音色做在线 V3 合成。请求头固定 seed-icl-2.0。该音色第一次合成成功收槽位费，之后只收字符费。",
+   "params": [
+    {
+     "key": "text",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 10000,
+     "description": "待合成文本。未转正音色：槽位费+字符费；已转正只按字符费。",
+     "required": true
+    },
+    {
+     "key": "speaker",
+     "type": "STRING",
+     "description": "训练 SKU 返回的 customSpeakerId，不要填公版音色或固定字 custom_speaker_id。",
+     "required": true
+    },
+    {
+     "key": "format",
+     "type": "LIST",
+     "options": [
+      "mp3",
+      "pcm",
+      "ogg_opus",
+      "wav"
+     ],
+     "default": "mp3",
+     "description": "输出音频格式，默认mp3"
+    },
+    {
+     "key": "sample_rate",
+     "type": "STRING",
+     "description": "采样率(Hz)，默认24000；可选：8000；16000；22050；24000；32000；44100；48000"
+    },
+    {
+     "key": "speech_rate",
+     "type": "NUMBER",
+     "default": 0,
+     "description": "语速，[-50,100]，100=2.0倍速，-50=0.5倍速，默认0"
+    },
+    {
+     "key": "loudness_rate",
+     "type": "NUMBER",
+     "default": 0,
+     "description": "音量，[-50,100]，100=2.0倍，-50=0.5倍，默认0"
+    },
+    {
+     "key": "bit_rate",
+     "type": "NUMBER",
+     "description": "比特率(bps)，仅mp3生效，范围[64000,160000]"
+    },
+    {
+     "key": "pitch",
+     "type": "NUMBER",
+     "description": "音调，[-12,12]，默认0"
+    },
+    {
+     "key": "enable_subtitle",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否开启字幕服务，开启后，返回字级别的时间戳，默认false"
+    },
+    {
+     "key": "max_length_to_filter_parenthesis",
+     "type": "NUMBER",
+     "default": 100,
+     "description": "是否过滤括号内内容：0不过滤，100过滤"
+    },
+    {
+     "key": "silence_duration",
+     "type": "NUMBER",
+     "description": "文本末尾增加静音时长(ms)，[0,30000]，默认0"
+    },
+    {
+     "key": "disable_markdown_filter",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否开启Markdown解析过滤，true:开启过滤，会解析并去除 Markdown 语法。例如\" **你好** \"朗读为 \"你好\";false：关闭过滤，保留原始字符。例如 \" **你好** \" 朗读为 \"星星你好星星\""
+    },
+    {
+     "key": "disable_emoji_filter",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否开启Emoji解析过滤，默认false"
+    },
+    {
+     "key": "enable_latex_tn",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否启用Latex文本朗读；控制 TTS 是否把输入文本里的 LaTeX 数学公式识别并转成可朗读的自然语言，再合成语音"
+    },
+    {
+     "key": "explicit_language",
+     "type": "LIST",
+     "options": [
+      "zh-cn",
+      "en",
+      "ja",
+      "es-mx",
+      "id",
+      "pt-br",
+      "pt",
+      "ko",
+      "de",
+      "fr",
+      "th",
+      "vi",
+      "ru",
+      "fil",
+      "ms",
+      "ar"
+     ],
+     "description": "显式指定朗读语种，默认自动判断；指定后仅朗读该语种内容"
+    },
+    {
+     "key": "context_texts",
+     "type": "STRING",
+     "maxLength": 500,
+     "description": "语音指令，仅豆包语音合成2.0音色支持；复刻音色指定 model 后不可用。该字段不参与计费。"
+    },
+    {
+     "key": "model",
+     "type": "LIST",
+     "options": [
+      "seed-tts-2.0-standard",
+      "seed-tts-2.0-expressive"
+     ],
+     "default": "seed-tts-2.0-standard",
+     "description": "仅复刻音色需要。standard 延时更优；expressive 支持语音指令。指定后不下发 context_texts。"
+    },
+    {
+     "key": "latex_parser",
+     "type": "LIST",
+     "options": [
+      "v2"
+     ],
+     "description": "LaTeX 朗读。取值 v2 时需同时 disable_markdown_filter=true。"
+    },
+    {
+     "key": "aigc_watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在合成结尾增加音频节奏标识。默认 false。"
+    },
+    {
+     "key": "disable_default_bit_rate",
+     "type": "BOOL",
+     "default": false,
+     "description": "为 true 后 bit_rate 可低于 64k（16000/32000）。仅 mp3 有效。"
+    },
+    {
+     "key": "section_id",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "多轮会话 ID，同一通电话多次合成传同一个 UUID。仅合成2.0/复刻2.0音色。"
+    },
+    {
+     "key": "tone_fidelity",
+     "type": "BOOL",
+     "default": false,
+     "description": "还原模式。仅复刻2.0、且合成与训练同语种；不支持跨语种和双向流。默认 false。"
+    },
+    {
+     "key": "aigc_metadata_enable",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在音频 header 写入 meta 隐式水印。支持 mp3/wav/ogg_opus。"
+    },
+    {
+     "key": "aigc_metadata_content_producer",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "合成服务提供者名称或编码。"
+    },
+    {
+     "key": "aigc_metadata_produce_id",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "内容制作编号。"
+    },
+    {
+     "key": "aigc_metadata_content_propagator",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "内容传播服务提供者名称或编码。"
+    },
+    {
+     "key": "aigc_metadata_propagate_id",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "内容传播编号。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516012530"
+  },
+  {
+   "endpoint": "bytedance/doubao-voice-clone",
+   "title": "Doubao-声音复刻-训练",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "上传人声样本训练后付费自定义音色，返回试听和 customSpeakerId。按 demoText 字符计费；槽位费在复刻合成首次成功时收取。",
+   "params": [
+    {
+     "key": "audioUrl",
+     "type": "STRING",
+     "description": "音色训练样本，最长约 10MB。建议清晰人声、噪声小。wav/mp3/ogg/m4a/aac/pcm（pcm 仅 24k 单声道）。\n\n支持的文件格式：WAV, MP3, OGG, M4A, AAC, PCM.",
+     "required": true
+    },
+    {
+     "key": "speakerId",
+     "type": "STRING",
+     "description": "火山 speaker_id，可传不同值。未传时默认 custom_speaker_id。这不是自定义音色代号；自定义代号用 customSpeakerId。不计费。"
+    },
+    {
+     "key": "customSpeakerId",
+     "type": "STRING",
+     "minLength": 8,
+     "maxLength": 256,
+     "description": "自定义音色代号，8-256 字符，须以英文字母开头。训练成功后用于复刻合成 SKU。槽位费在该音色第一次合成成功时收取，训练只收试听字符。"
+    },
+    {
+     "key": "text",
+     "type": "STRING",
+     "maxLength": 2000,
+     "description": "参考文本（可选）。让用户按该文本念诵，服务会对比音频与文本差异，差异过大将复刻失败。"
+    },
+    {
+     "key": "demoText",
+     "type": "STRING",
+     "minLength": 4,
+     "maxLength": 300,
+     "description": "试听文本，必填 4–300 字。训练按该字段字符数收费；prompt/text 不计费。",
+     "required": true
+    },
+    {
+     "key": "language",
+     "type": "LIST",
+     "options": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "19",
+      "20",
+      "21"
+     ],
+     "default": "0",
+     "description": "样本语种，须与音频内容一致。默认中文。"
+    },
+    {
+     "key": "enableAudioDenoise",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否开启降噪。样本噪声大时建议开启，样本质量好时建议关闭。开启可能损失声音细节。"
+    },
+    {
+     "key": "disableVolumeNormalization",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否关闭音量归一化。关闭后合成音量更接近样本，相似度通常更高。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516012531"
   },
   {
    "endpoint": "minimax/hailuo-h3/context-ir-image",
@@ -22739,6 +23070,219 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-494858298"
+  },
+  {
+   "endpoint": "volc-enhance-fast/video",
+   "title": "火山画质增强-极速版",
+   "task": "video-tools",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "火山画质增强极速版面向时延和成本敏感的视频处理场景，以更快速度完成超分、清晰度增强和可选补帧，并支持最高 4K 输出。适合批量素材、社交视频和快速预览等高吞吐工作流。",
+   "params": [
+    {
+     "key": "videoUrl",
+     "type": "STRING",
+     "description": "待增强的视频。输入最高 2K（长边 360～2560，短边 360～1440）；建议不超过 10GB。\n\n支持的文件格式：MP4, FLV, TS, AVI, MOV, WMV, MKV.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "240p",
+      "360p",
+      "480p",
+      "540p",
+      "720p",
+      "1080p",
+      "2k",
+      "4k"
+     ],
+     "description": "输出分辨率，参与计费；不传时保持源视频分辨率。240p～540p 按 720p 档计费。"
+    },
+    {
+     "key": "resolutionLimit",
+     "type": "NUMBER",
+     "description": "输出短边像素限制，范围 128～2160；与 resolution 互斥。"
+    },
+    {
+     "key": "fps",
+     "type": "NUMBER",
+     "description": "目标帧率，范围 15～120；不传则保持源帧率。建议不超过原片帧率 4 倍。高于片源会插帧并按目标帧率档计费。"
+    },
+    {
+     "key": "bitrateLevel",
+     "type": "LIST",
+     "options": [
+      "low",
+      "medium",
+      "high"
+     ],
+     "default": "medium",
+     "description": "输出码率档位，默认 medium。与精确码率同时指定时仅精确码率生效。"
+    },
+    {
+     "key": "bitrate",
+     "type": "NUMBER",
+     "description": "精确目标平均码率，单位 kbps，范围 10～150000。与码率档位同时指定时仅本参数生效。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516012532"
+  },
+  {
+   "endpoint": "volc-enhance-generative/video",
+   "title": "火山画质增强-大模型版",
+   "task": "video-tools",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "火山画质增强大模型版面向 AIGC 低清视频和高质量修复场景，通过生成式增强补足纹理、边缘与主体细节，并支持最高 2K 输出。适合广告素材、短剧和生成视频的高质量终稿处理。",
+   "params": [
+    {
+     "key": "videoUrl",
+     "type": "STRING",
+     "description": "待增强的视频。仅支持 SDR；输入最高 1080p（长边 360～1920，短边 360～1080）；建议不超过 10GB。\n\n支持的文件格式：MP4, FLV, TS, AVI, MOV, WMV, MKV.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "720p",
+      "1080p",
+      "2k"
+     ],
+     "description": "输出分辨率，参与计费；不传时按源视频短边计费，且不低于 720p。"
+    },
+    {
+     "key": "fps",
+     "type": "NUMBER",
+     "description": "目标帧率，范围 15～120；不传则保持源帧率。建议不超过原片帧率 4 倍。高于片源会插帧并按目标帧率档计费。"
+    },
+    {
+     "key": "bitrateLevel",
+     "type": "LIST",
+     "options": [
+      "low",
+      "medium",
+      "high"
+     ],
+     "default": "medium",
+     "description": "输出码率档位，默认 medium。与精确码率同时指定时仅精确码率生效。"
+    },
+    {
+     "key": "bitrate",
+     "type": "NUMBER",
+     "description": "精确目标平均码率，单位 kbps，范围 10～150000。与码率档位同时指定时仅本参数生效。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516012534"
+  },
+  {
+   "endpoint": "volc-enhance/video",
+   "title": "火山画质增强-标准专业版",
+   "task": "video-tools",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "火山画质增强标准专业版覆盖日常超分与高端制作两类场景。标准版兼顾质量、速度与成本，并提供通用、AIGC、短剧、UGC 和老片修复模板；专业版进一步强化细节和稳定性，支持最高 8K 与 8/10/12/16bit 色深。",
+   "params": [
+    {
+     "key": "videoUrl",
+     "type": "STRING",
+     "description": "待增强的视频。输入最高 2K（长边 360～2560，短边 360～1440）；建议不超过 10GB。\n\n支持的文件格式：MP4, FLV, TS, AVI, MOV, WMV, MKV.",
+     "required": true
+    },
+    {
+     "key": "mode",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "professional"
+     ],
+     "default": "standard",
+     "description": "处理版本；专业版单价约为标准版 10 倍，对应上游 tool_version。"
+    },
+    {
+     "key": "scene",
+     "type": "LIST",
+     "options": [
+      "common",
+      "aigc",
+      "short_series",
+      "ugc",
+      "old_film"
+     ],
+     "default": "common",
+     "description": "标准版场景模板；专业版会忽略该参数。官方默认 common。"
+    },
+    {
+     "key": "enhanceStyle",
+     "type": "LIST",
+     "options": [
+      "hd",
+      "natural"
+     ],
+     "default": "hd",
+     "description": "增强风格。hd 为默认高清；natural 降低锐化痕迹。标准版与专业版均支持。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "240p",
+      "360p",
+      "480p",
+      "540p",
+      "720p",
+      "1080p",
+      "2k",
+      "4k",
+      "8k"
+     ],
+     "description": "输出分辨率，参与计费；不传时保持源视频分辨率。240p～540p 按 720p 档计费；8k 单价约为 4k 的 4 倍。"
+    },
+    {
+     "key": "resolutionLimit",
+     "type": "NUMBER",
+     "description": "输出短边像素限制，范围 128～4320；与 resolution 互斥。"
+    },
+    {
+     "key": "fps",
+     "type": "NUMBER",
+     "description": "目标帧率，范围 15～120；不传则保持源帧率。建议不超过原片帧率 4 倍。高于片源会插帧并按目标帧率档计费。"
+    },
+    {
+     "key": "bitrateLevel",
+     "type": "LIST",
+     "options": [
+      "low",
+      "medium",
+      "high"
+     ],
+     "default": "medium",
+     "description": "输出码率档位，默认 medium。与精确码率同时指定时仅精确码率生效；16bit 专业版下码率参数不生效。"
+    },
+    {
+     "key": "bitrate",
+     "type": "NUMBER",
+     "description": "精确目标平均码率，单位 kbps，范围 10～150000。与码率档位同时指定时仅本参数生效；16bit 专业版下不生效。"
+    },
+    {
+     "key": "bitDepth",
+     "type": "LIST",
+     "options": [
+      "8",
+      "10",
+      "12",
+      "16"
+     ],
+     "default": "8",
+     "description": "输出色深，仅专业版生效，默认 8。16bit 要求输入不超过 40 秒、输出 MOV，且为单任务串行。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516012533"
   },
   {
    "endpoint": "volc-subtitle-erase-pro/video",
