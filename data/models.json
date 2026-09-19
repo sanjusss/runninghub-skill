@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-09-17T08:46:25+00:00",
+ "builtAt": "2026-09-19T08:10:15+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 362,
+ "total": 365,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -10343,6 +10343,147 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-516012531"
+  },
+  {
+   "endpoint": "bytedance/jimeng-seed3-tilesr/image-upscale",
+   "title": "即梦智能超清",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "即梦智能超清基于 Seedream 基模，面向 AIGC 生成图和低质量原图做结构保持的细节增强。它在尽量维持全局构图与语义一致的前提下放开局部一致性，补足纹理与锐度，把画面提升到 4K 或 8K。适合修复糊图、放大海报和电商主图，一次输入一张图即可输出更高质感的成片。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "待超清的输入图，仅支持 JPEG/PNG，最大 4.7MB，分辨率不超过 4096×4096，宽高比 1:3～3:1\n\n支持的文件格式：JPG, JPEG, PNG.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "4k",
+      "8k"
+     ],
+     "default": "4k",
+     "description": "输出分辨率"
+    },
+    {
+     "key": "scale",
+     "type": "NUMBER",
+     "default": 50,
+     "description": "细节生成程度，取值 0-100，越大细节越多"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-517147132"
+  },
+  {
+   "endpoint": "hitem3d-v3/image-to-3d",
+   "title": "hitem3d-v3/image-to-3d",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "数美万物 Hi3D 通用模型 v3.0 单图生3D。支持 2048quality / 2048master 分辨率，面数可达 500 万，几何与纹理质量相对 v2.x 进一步提升，适用于高精度打印与影视级资产。",
+   "params": [
+    {
+     "key": "requestType",
+     "type": "LIST",
+     "options": [
+      "mesh",
+      "both"
+     ],
+     "default": "mesh",
+     "description": "请求类型，mesh：仅生成纯几何；both：一次性生成几何+纹理模型；默认为几何",
+     "required": true
+    },
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "上传图像，模型将以此参数中传入的图片来生成3D模型\n\n支持的文件格式：PNG, JPEG, JPG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "2048quality",
+      "2048master"
+     ],
+     "default": "2048quality",
+     "description": "分辨率：2048quality / 2048master（v3.0）",
+     "required": true
+    },
+    {
+     "key": "face",
+     "type": "NUMBER",
+     "default": 2000000,
+     "description": "模型面数，取值范围100000~5000000，推荐：2048quality：2000000；2048master：5000000"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-517147130"
+  },
+  {
+   "endpoint": "hitem3d-v3/multi-image-to-3d",
+   "title": "hitem3d-v3/multi-image-to-3d",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "数美万物 Hi3D 通用模型 v3.0 多视角生3D。支持前/后/左/右最多 4 张参考图，分辨率 2048quality / 2048master，适合需要多视角一致性的角色与商品资产。",
+   "params": [
+    {
+     "key": "requestType",
+     "type": "LIST",
+     "options": [
+      "mesh",
+      "both"
+     ],
+     "default": "mesh",
+     "description": "请求类型，mesh：仅生成纯几何；both：一次性生成几何+纹理模型；默认为几何",
+     "required": true
+    },
+    {
+     "key": "frontImageUrl",
+     "type": "STRING",
+     "description": "frontImageUrl\n\n支持的文件格式：PNG, JPEG, JPG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "backImageUrl",
+     "type": "STRING",
+     "description": "backImageUrl\n\n支持的文件格式：PNG, JPEG, JPG, WEBP."
+    },
+    {
+     "key": "leftImageUrl",
+     "type": "STRING",
+     "description": "leftImageUrl\n\n支持的文件格式：PNG, JPEG, JPG, WEBP."
+    },
+    {
+     "key": "rightImageUrl",
+     "type": "STRING",
+     "description": "rightImageUrl\n\n支持的文件格式：PNG, JPEG, JPG, WEBP."
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "2048quality",
+      "2048master"
+     ],
+     "default": "2048quality",
+     "description": "分辨率：2048quality / 2048master（v3.0）",
+     "required": true
+    },
+    {
+     "key": "face",
+     "type": "NUMBER",
+     "default": 2000000,
+     "description": "模型面数，取值范围100000~5000000，推荐：2048quality：2000000；2048master：5000000"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-517147131"
   },
   {
    "endpoint": "minimax/hailuo-h3/context-ir-image",
