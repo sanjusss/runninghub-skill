@@ -1,6 +1,6 @@
 {
  "version": 2,
- "builtAt": "2026-09-20T08:42:24+00:00",
+ "builtAt": "2026-09-21T09:07:48+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
  "total": 365,
  "endpoints": [
@@ -11029,7 +11029,7 @@
      "key": "videoUrls",
      "type": "ARRAY",
      "itemType": "string",
-     "description": "全能参考视频，最多 5 段，单段 1-15 秒且总时长 ≤15 秒。输入视频按 min(总时长, 5) 秒计费。\n\n支持的文件格式：MP4, MOV."
+     "description": "全能参考视频，最多 5 段，单段 1-15 秒且总时长 ≤15 秒。输入视频按 min(总时长, 15) 秒计费。\n\n支持的文件格式：MP4, MOV."
     },
     {
      "key": "imageUrls",
@@ -11155,7 +11155,7 @@
      "key": "videoUrls",
      "type": "ARRAY",
      "itemType": "string",
-     "description": "全能参考视频，最多 5 段，单段 1-15 秒且总时长 ≤15 秒。输入视频按 min(总时长, 5) 秒计费。\n\n支持的文件格式：MP4, MOV."
+     "description": "全能参考视频，最多 5 段，单段 1-15 秒且总时长 ≤15 秒。输入视频按 min(总时长, 15) 秒计费。\n\n支持的文件格式：MP4, MOV."
     },
     {
      "key": "imageUrls",
