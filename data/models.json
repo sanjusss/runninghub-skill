@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-09-21T09:07:48+00:00",
+ "builtAt": "2026-09-23T08:42:37+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 365,
+ "total": 367,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -3286,6 +3286,71 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183201"
+  },
+  {
+   "endpoint": "seedream-v4.7/image-to-image",
+   "title": "seedream-v4.7-图生图",
+   "task": "image-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "seedream",
+   "description": "字节跳动 Seedream 4.7 图生图与 Seedream 4.0 共用同一套火山方舟 images/generations 协议，专注高精度图像编辑。它能在锁定主体身份、原有光影和构图的前提下完成服装妆造切换、产品材质配色更替以及室内饰面翻新。对皮肤质感、织物细节和品牌 Logo 还原度高，支持最多 10 张参考图与组图生成，适合电商测款与人像工作流。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 2000,
+     "description": "prompt",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 2048,
+     "description": "width"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 2048,
+     "description": "height"
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "imageUrls\n\n支持的文件格式：PNG, JPEG.",
+     "required": true
+    },
+    {
+     "key": "sequentialImageGeneration",
+     "type": "LIST",
+     "options": [
+      "disabled",
+      "auto"
+     ],
+     "default": "disabled",
+     "description": "sequentialImageGeneration"
+    },
+    {
+     "key": "maxImages",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "maxImages"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1k",
+      "2k",
+      "4k"
+     ],
+     "description": "优先级高于widthxheight，传递resolution则使用resolution，不再使用widthxheight"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-518921430"
   },
   {
    "endpoint": "seedream-v4/image-to-image",
@@ -10015,7 +10080,7 @@
   },
   {
    "endpoint": "arklin/video-super-resolution",
-   "title": "arklin/视频超分补帧",
+   "title": "DetailX/视频超分补帧",
    "task": "other",
    "outputType": "other",
    "category": "其他",
@@ -16892,6 +16957,64 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183229"
+  },
+  {
+   "endpoint": "seedream-v4.7/text-to-image",
+   "title": "seedream-v4.7-文生图",
+   "task": "text-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "seedream",
+   "description": "字节跳动 Seedream 4.7 文生图是 Seedream 4.0 的同接口升级快照，面向平面设计与社媒创意。它延续布局感知能力，擅长多格海报、九宫格、三联画和漫画分镜，并能规划标题与正文留白。系列 KV 在色调、光影和相机视角上保持高度一致，支持最高 4096×4096 的 4K 超清输出，适合营销素材与概念设计的工业级出图。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 2000,
+     "description": "prompt",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 2048,
+     "description": "width"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 2048,
+     "description": "height"
+    },
+    {
+     "key": "sequentialImageGeneration",
+     "type": "LIST",
+     "options": [
+      "disabled",
+      "auto"
+     ],
+     "default": "disabled",
+     "description": "sequentialImageGeneration"
+    },
+    {
+     "key": "maxImages",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "maxImages"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1k",
+      "2k",
+      "4k"
+     ],
+     "description": "优先级高于widthxheight，传递resolution则使用resolution，不再使用widthxheight"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-518921431"
   },
   {
    "endpoint": "seedream-v4/text-to-image",
