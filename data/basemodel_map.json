@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "source": "RunningHub 前端底模枚举（POST https://{www.runninghub.cn,www.runninghub.ai}/api/resource/baseModels，2026-09-12 实测两站各 46 值且一致）映射到 Civitai baseModel 取值",
+    "source": "RunningHub 前端底模枚举（POST https://{www.runninghub.cn,www.runninghub.ai}/api/resource/baseModels，2026-10-02 实测两站各 47 值且一致）映射到 Civitai baseModel 取值",
     "usage": "allow 是该 RunningHub 底模可用的 Civitai baseModel 集合（本地大小写不敏感匹配）；weight 是血统系数，用于候选排序，省略时默认 1.0；allow 为空数组表示 Civitai 上没有兼容 LoRA",
     "matching": "匹配规则见 references/civitai-lora-sync.md"
   },
@@ -42,6 +42,7 @@
   "Flux2-Klein-9B": {"allow": ["Flux.2 Klein 9B", "Flux.2 Klein 9B-base"]},
   "Flux2-Klein-4B": {"allow": ["Flux.2 Klein 4B", "Flux.2 Klein 4B-base"]},
   "Qwen-image": {"allow": ["Qwen"]},
+  "qwen-image-2.1": {"allow": ["Qwen 2.1"], "note": "7B 架构，仅匹配 2.1 专用 LoRA，不兼容旧版 20B Qwen LoRA"},
   "Qwen-Image-2512": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
   "Qwen-Edit-2509": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
   "Qwen-Edit-2511": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
