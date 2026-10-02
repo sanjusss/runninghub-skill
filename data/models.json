@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-09-23T08:42:37+00:00",
+ "builtAt": "2026-10-02T09:55:19+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 367,
+ "total": 375,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -181,6 +181,176 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183183"
+  },
+  {
+   "endpoint": "rhart-video/minimax-h3-rh-enhanced/i2va",
+   "title": "Minimax H3 RH Enhanced Image-to-Video",
+   "task": "audio-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 图生/首尾帧视频。必填时长与驱动音频，可传首尾帧与参考音色。",
+   "params": [
+    {
+     "key": "84##value",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 20000,
+     "description": "正向提示词"
+    },
+    {
+     "key": "73##aspect_ratio",
+     "type": "LIST",
+     "options": [
+      "1:1 (Square)",
+      "2:3 (Portrait Photo)",
+      "3:2 (Photo)",
+      "3:4 (Portrait Standard)",
+      "4:3 (Standard)",
+      "9:16 (Portrait Widescreen)",
+      "16:9 (Widescreen)",
+      "21:9 (Ultrawide)"
+     ],
+     "default": "9:16",
+     "description": "画面比例，传 16:9 / 9:16 / 1:1 等比值即可"
+    },
+    {
+     "key": "73##megapixels",
+     "type": "LIST",
+     "options": [
+      "0.135164359862",
+      "0.346020761246",
+      "0.684269571799"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率，可选 480p / 768p / 1080p",
+     "required": true
+    },
+    {
+     "key": "74##value",
+     "type": "NUMBER",
+     "default": 12,
+     "description": "时长（秒），范围 4–15",
+     "required": true
+    },
+    {
+     "key": "202##image",
+     "type": "STRING",
+     "description": "首帧\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "203##image",
+     "type": "STRING",
+     "description": "尾帧\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "200##audio",
+     "type": "STRING",
+     "description": "驱动口型音频，不传则走工作流默认音频\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "225##value",
+     "type": "LIST",
+     "options": [
+      "lock_source",
+      "remix_source",
+      "reference_only",
+      "native"
+     ],
+     "default": "native",
+     "description": "传 lock_source / remix_source / reference_only / native。默认 native。要锁死用户音轨（MV）时传 lock_source。",
+     "required": true
+    },
+    {
+     "key": "218##audio",
+     "type": "STRING",
+     "description": "音色参考1\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "219##audio",
+     "type": "STRING",
+     "description": "音色参考2\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "220##audio",
+     "type": "STRING",
+     "description": "音色参考3\n\n支持的文件格式：MP3, WAV."
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-520877435"
+  },
+  {
+   "endpoint": "rhart-video/minimax-h3-rh-enhanced/t2va",
+   "title": "Minimax H3 RH Enhanced Text-to-Video",
+   "task": "audio-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 文生视频。必填正向提示词、时长与驱动音频。",
+   "params": [
+    {
+     "key": "84##value",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 20000,
+     "description": "正向提示词",
+     "required": true
+    },
+    {
+     "key": "73##aspect_ratio",
+     "type": "LIST",
+     "options": [
+      "1:1 (Square)",
+      "2:3 (Portrait Photo)",
+      "3:2 (Photo)",
+      "3:4 (Portrait Standard)",
+      "4:3 (Standard)",
+      "9:16 (Portrait Widescreen)",
+      "16:9 (Widescreen)",
+      "21:9 (Ultrawide)"
+     ],
+     "default": "16:9",
+     "description": "画面比例，传 16:9 / 9:16 / 1:1 等比值即可"
+    },
+    {
+     "key": "73##megapixels",
+     "type": "LIST",
+     "options": [
+      "0.135164359862",
+      "0.346020761246",
+      "0.684269571799"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率，可选 480p / 768p / 1080p",
+     "required": true
+    },
+    {
+     "key": "74##value",
+     "type": "NUMBER",
+     "default": 8,
+     "description": "时长（秒），范围 4–15",
+     "required": true
+    },
+    {
+     "key": "200##audio",
+     "type": "STRING",
+     "description": "驱动口型音频，不传则走工作流默认音频\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "225##value",
+     "type": "LIST",
+     "options": [
+      "lock_source",
+      "remix_source",
+      "reference_only",
+      "native"
+     ],
+     "default": "native",
+     "description": "传 lock_source / remix_source / reference_only / native。默认 native。要锁死用户音轨（MV）时传 lock_source。",
+     "required": true
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-520877436"
   },
   {
    "endpoint": "kling-v2-ai-avatar-pro/image-audio-to-video",
@@ -4945,6 +5115,12 @@
      ],
      "default": "mp4",
      "description": "输出视频的格式。mp4：通用格式，兼容性最好；mov：专业高色彩精度，推荐编辑/延长场景。"
+    },
+    {
+     "key": "draft",
+     "type": "BOOL",
+     "default": false,
+     "description": "样片模式。开启后仅生成480p样片，分辨率必须为480p。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-498749505"
@@ -10551,6 +10727,166 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-517147131"
   },
   {
+   "endpoint": "seedream-v5-flash/image-to-image",
+   "title": "seedream-v5-flash-图生图",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Seedream 5.0 Flash 图生图支持最多 10 张参考图，可做主体保持、局部改绘和多图融合。分辨率支持 1K、1.5K 与 2K，输出按张计费且三档同价，参考图不再另收费。适合人像改风格、产品改版和带标记的局部编辑。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 5000,
+     "description": "编辑或融合指令",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "width"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "height"
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，1 到 10 张\n\n支持的文件格式：PNG, JPEG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1k",
+      "1.5k",
+      "2k"
+     ],
+     "default": "2k",
+     "description": "优先级高于 width 与 height。传入 resolution 后不再使用宽高像素。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png"
+     ],
+     "default": "jpeg",
+     "description": "输出图片格式，可选 png 或 jpeg"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-519905081"
+  },
+  {
+   "endpoint": "seedream-v5-flash/layer-decomposition",
+   "title": "seedream-v5-flash-图层拆分",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Seedream 5.0 Flash 图层拆分把单张图片拆成 1 张底图和最多 16 个带透明通道的图层，并返回层级与包围盒。分辨率可选 auto、1K、1.5K、2K，输出按实际张数计费，各档单价相同。适合海报元素拆解和后续拖拽重组。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "待拆分的单张图片\n\n支持的文件格式：PNG, JPEG, WEBP, BMP, TIFF, GIF.",
+     "required": true
+    },
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 2000,
+     "description": "可选。描述要拆出的元素；留空则自动识别主要元素"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "1k",
+      "1.5k",
+      "2k"
+     ],
+     "default": "auto",
+     "description": "输出分辨率档位，默认 auto"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png"
+     ],
+     "default": "jpeg",
+     "description": "底图输出格式，图层固定为 png"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-519905080"
+  },
+  {
+   "endpoint": "seedream-v5-flash/text-to-image",
+   "title": "seedream-v5-flash-文生图",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Seedream 5.0 Flash 文生图面向需要快速出稿的设计生产。只提交提示词即可生成单张商用图片，支持 1K、1.5K 与 2K，三档按同一张单价计费。输出 PNG 或 JPEG，文字渲染覆盖中文及多种外语，适合海报、电商主图和信息图的快速打样。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 5000,
+     "description": "用于生成图片的提示词",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "width"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "height"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1k",
+      "1.5k",
+      "2k"
+     ],
+     "default": "2k",
+     "description": "优先级高于 width 与 height。传入 resolution 后不再使用宽高像素。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png"
+     ],
+     "default": "jpeg",
+     "description": "输出图片格式，可选 png 或 jpeg"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-519905082"
+  },
+  {
    "endpoint": "minimax/hailuo-h3/context-ir-image",
    "title": "MiniMax-H3-Context-IR 图像增强提示词",
    "task": "prompt-enhance",
@@ -11495,6 +11831,12 @@
      ],
      "default": "auto",
      "description": "全模态参考生视频任务类型引导。auto：模型自动判定；reference：参考生视频（ratio/duration 无特殊限制）；edit：视频编辑（须含 reference_video 且时长 4-30s，ratio 须 adaptive，duration 须 -1）；extend：视频延长（须含 reference_video，ratio 须 adaptive）。"
+    },
+    {
+     "key": "draft",
+     "type": "BOOL",
+     "default": false,
+     "description": "样片模式。开启后仅生成480p样片，分辨率必须为480p。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-498749503"
@@ -12247,6 +12589,163 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-502119461"
+  },
+  {
+   "endpoint": "rhart-video/minimax-h3-rh-enhanced/ref2va",
+   "title": "Minimax H3 RH Enhanced Multi-Reference",
+   "task": "reference-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 多参考视频。支持最多 9 张参考图、3 路参考视频与多路音频，驱动音频与时长必填。",
+   "params": [
+    {
+     "key": "84##value",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 20000,
+     "description": "正向提示词"
+    },
+    {
+     "key": "73##aspect_ratio",
+     "type": "LIST",
+     "options": [
+      "1:1 (Square)",
+      "2:3 (Portrait Photo)",
+      "3:2 (Photo)",
+      "3:4 (Portrait Standard)",
+      "4:3 (Standard)",
+      "9:16 (Portrait Widescreen)",
+      "16:9 (Widescreen)",
+      "21:9 (Ultrawide)"
+     ],
+     "default": "9:16",
+     "description": "画面比例，传 16:9 / 9:16 / 1:1 等比值即可"
+    },
+    {
+     "key": "73##megapixels",
+     "type": "LIST",
+     "options": [
+      "0.135164359862",
+      "0.346020761246",
+      "0.684269571799"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率，可选 480p / 768p / 1080p",
+     "required": true
+    },
+    {
+     "key": "74##value",
+     "type": "NUMBER",
+     "default": 10,
+     "description": "时长（秒），范围 4–15",
+     "required": true
+    },
+    {
+     "key": "204##image",
+     "type": "STRING",
+     "description": "参考图1\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "210##image",
+     "type": "STRING",
+     "description": "参考图2\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "209##image",
+     "type": "STRING",
+     "description": "参考图3\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "208##image",
+     "type": "STRING",
+     "description": "参考图4\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "207##image",
+     "type": "STRING",
+     "description": "参考图5\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "206##image",
+     "type": "STRING",
+     "description": "参考图6\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "205##image",
+     "type": "STRING",
+     "description": "参考图7\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "211##image",
+     "type": "STRING",
+     "description": "参考图8\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "212##image",
+     "type": "STRING",
+     "description": "参考图9\n\n支持的文件格式：JPG, PNG."
+    },
+    {
+     "key": "178##video",
+     "type": "STRING",
+     "description": "参考视频1\n\n支持的文件格式：MP4."
+    },
+    {
+     "key": "155##video",
+     "type": "STRING",
+     "description": "参考视频2\n\n支持的文件格式：MP4."
+    },
+    {
+     "key": "214##video",
+     "type": "STRING",
+     "description": "参考视频3\n\n支持的文件格式：MP4."
+    },
+    {
+     "key": "200##audio",
+     "type": "STRING",
+     "description": "驱动口型音频，不传则走工作流默认音频\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "225##value",
+     "type": "LIST",
+     "options": [
+      "lock_source",
+      "remix_source",
+      "reference_only",
+      "native"
+     ],
+     "default": "native",
+     "description": "传 lock_source / remix_source / reference_only / native。默认 native。要锁死用户音轨（MV）时传 lock_source。",
+     "required": true
+    },
+    {
+     "key": "218##audio",
+     "type": "STRING",
+     "description": "音色参考1\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "219##audio",
+     "type": "STRING",
+     "description": "音色参考2\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "220##audio",
+     "type": "STRING",
+     "description": "音色参考3\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "216##audio",
+     "type": "STRING",
+     "description": "参考视频1伴音，模仿音画节奏/运镜\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "217##audio",
+     "type": "STRING",
+     "description": "参考视频2伴音，模仿音画节奏/运镜\n\n支持的文件格式：MP3, WAV."
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-520877434"
   },
   {
    "endpoint": "rhart-video/sparkvideo-2.0-fast/multimodal-video",
@@ -18708,6 +19207,12 @@
      ],
      "default": "mp4",
      "description": "输出视频的格式。mp4：通用格式，兼容性最好；mov：专业高色彩精度，推荐编辑/延长场景。"
+    },
+    {
+     "key": "draft",
+     "type": "BOOL",
+     "default": false,
+     "description": "样片模式。开启后仅生成480p样片，分辨率必须为480p。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-498749507"
@@ -22054,6 +22559,58 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183170"
   },
   {
+   "endpoint": "bytedance/seedance-2.5-token/draft-to-video",
+   "title": "seedance2.5/样片成片 Token",
+   "task": "video-edit",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "基于 Seedance 2.5 样片任务生成 1080p 成片。draftTaskId 为 RH 样片任务 id，有效期 7 天。",
+   "params": [
+    {
+     "key": "draftTaskId",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 128,
+     "description": "样片任务id，有效期7天。",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "native1080p"
+     ],
+     "default": "native1080p",
+     "description": "成片分辨率。模型原生直出。",
+     "required": true
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "mp4",
+      "mov"
+     ],
+     "default": "mp4",
+     "description": "成片输出格式"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否加水印。不传则沿用样片任务的设置。"
+    },
+    {
+     "key": "returnLastFrame",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否返回尾帧。不传则沿用样片任务的设置。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-520231725"
+  },
+  {
    "endpoint": "google/gemini-omni-1.1-flash/video-edit",
    "title": "Gemini Omni 1.1 Flash 视频编辑/稳定版",
    "task": "video-edit",
@@ -22922,6 +23479,76 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183173"
+  },
+  {
+   "endpoint": "rhart-video/rh-upscale/enhance-frame",
+   "title": "RH Upscale",
+   "task": "video-tools",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "视频超分与插帧一体接口。可指定目标分辨率与增强强度，并按倍率或目标帧率补帧。",
+   "params": [
+    {
+     "key": "2##file",
+     "type": "STRING",
+     "description": "输入视频\n\n支持的文件格式：MP4.",
+     "required": true
+    },
+    {
+     "key": "5##模型",
+     "type": "LIST",
+     "options": [
+      "Max",
+      "High",
+      "Medium",
+      "Low"
+     ],
+     "default": "max",
+     "description": "max（推荐）：日常首选，速度与画质兼顾，夜景、暗光场景表现最好；拿不准就选它。high（高画质）：效果接近 max，素材偏糊时比 max 略稳，夜景表现也不错。medium（标准）：纹理细节保持较好，低清素材提升有限，适合素材本身较清晰的批量任务。low（轻量）：画质提升幅度最小，适合大批量、对画质要求不高的任务。",
+     "required": true
+    },
+    {
+     "key": "5##分辨率",
+     "type": "LIST",
+     "options": [
+      "1080p",
+      "2K",
+      "4K"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率，按输入画面比例适配、不拉伸。可选 1080p / 2k / 4k",
+     "required": true
+    },
+    {
+     "key": "4##output_fps",
+     "type": "LIST",
+     "options": [
+      "1x",
+      "2x",
+      "3x",
+      "4x",
+      "23.976",
+      "24",
+      "25",
+      "29.97",
+      "30",
+      "48",
+      "50",
+      "59.94",
+      "60",
+      "72",
+      "90",
+      "96",
+      "120",
+      "144"
+     ],
+     "default": "1x",
+     "description": "输出帧率：1x 通传，2x/3x/4x 插帧，或指定 fps",
+     "required": true
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-521039271"
   },
   {
    "endpoint": "rhart-video/video-fps-increaser",
