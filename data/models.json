@@ -189,7 +189,7 @@
    "outputType": "video",
    "category": "视频生成与处理",
    "vendor": "",
-   "description": "基于开源 MiniMax H3 的 RH Enhanced 图生/首尾帧视频。必填时长与驱动音频，可传首尾帧与参考音色。<a href=\"https://rh-h3.apps.vibex.cn/deck.html\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#ccff00;opacity:1;text-decoration:underline\">能力说明</a>",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 图生/首尾帧视频。必填时长与驱动音频，可传首尾帧与参考音色。能力说明 https://rh-h3.apps.vibex.cn/deck.html",
    "params": [
     {
      "key": "84##value",
@@ -286,7 +286,7 @@
    "outputType": "video",
    "category": "视频生成与处理",
    "vendor": "",
-   "description": "基于开源 MiniMax H3 的 RH Enhanced 文生视频。必填正向提示词、时长与驱动音频。<a href=\"https://rh-h3.apps.vibex.cn/deck.html\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#ccff00;opacity:1;text-decoration:underline\">能力说明</a>",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 文生视频。必填正向提示词、时长与驱动音频。能力说明 https://rh-h3.apps.vibex.cn/deck.html",
    "params": [
     {
      "key": "84##value",
@@ -12684,7 +12684,7 @@
    "outputType": "video",
    "category": "视频生成与处理",
    "vendor": "",
-   "description": "基于开源 MiniMax H3 的 RH Enhanced 多参考视频。支持最多 9 张参考图、3 路参考视频与多路音频，驱动音频与时长必填。<a href=\"https://rh-h3.apps.vibex.cn/deck.html\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#ccff00;opacity:1;text-decoration:underline\">能力说明</a>",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 多参考视频。支持最多 9 张参考图、3 路参考视频与多路音频，驱动音频与时长必填。能力说明 https://rh-h3.apps.vibex.cn/deck.html",
    "params": [
     {
      "key": "84##value",
