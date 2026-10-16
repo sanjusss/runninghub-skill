@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-10-02T09:55:19+00:00",
+ "builtAt": "2026-10-16T08:19:42+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 375,
+ "total": 379,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -189,7 +189,7 @@
    "outputType": "video",
    "category": "视频生成与处理",
    "vendor": "",
-   "description": "基于开源 MiniMax H3 的 RH Enhanced 图生/首尾帧视频。必填时长与驱动音频，可传首尾帧与参考音色。",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 图生/首尾帧视频。必填时长与驱动音频，可传首尾帧与参考音色。能力说明 https://rh-h3.apps.vibex.cn/deck.html",
    "params": [
     {
      "key": "84##value",
@@ -286,7 +286,7 @@
    "outputType": "video",
    "category": "视频生成与处理",
    "vendor": "",
-   "description": "基于开源 MiniMax H3 的 RH Enhanced 文生视频。必填正向提示词、时长与驱动音频。",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 文生视频。必填正向提示词、时长与驱动音频。能力说明 https://rh-h3.apps.vibex.cn/deck.html",
    "params": [
     {
      "key": "84##value",
@@ -4862,6 +4862,12 @@
      "key": "seed",
      "type": "NUMBER",
      "description": "随机种子，范围 [0, 2147483647]。"
+    },
+    {
+     "key": "promptExtend",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505922315"
@@ -4968,6 +4974,12 @@
      "key": "seed",
      "type": "NUMBER",
      "description": "随机种子，范围 [0, 2147483647]。"
+    },
+    {
+     "key": "promptExtend",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505575337"
@@ -9241,6 +9253,69 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183066"
   },
   {
+   "endpoint": "vidu/q4-preview/image-to-video",
+   "title": "Vidu Q4 Preview 图生视频",
+   "task": "image-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "Vidu Q4 Preview 图生视频",
+   "description": "one 图生视频面向一张静帧直接开拍的场景。上传一张首帧图后，模型继承原图比例和画面风格，生成 3 到 16 秒视频，分辨率从 540p 覆盖到 4K，并可同步生成台词与音效。自动切镜让单帧展开成有节奏的短镜头，适合海报动态化、分镜预演和产品展示。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 5000,
+     "description": "视频描述。不填则只按首帧图生成。最长 5000 个字符。"
+    },
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "首帧图片，只支持 1 张。支持 JPG、JPEG、PNG、WEBP，单张不超过 50MB。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "NUMBER",
+     "default": 5,
+     "description": "视频时长（秒）。默认 5 秒，可选 3 到 16 的整数。",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "540p",
+      "720p",
+      "1080p",
+      "2k",
+      "4k"
+     ],
+     "default": "720p",
+     "description": "分辨率。默认 720p，可选 540p、720p、1080p、2k、4k。",
+     "required": true
+    },
+    {
+     "key": "audio",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否音画同出。开启后输出带台词和音效的视频，关闭后输出静音视频。默认开启。"
+    },
+    {
+     "key": "isRec",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否启用 AI 改写提示词。默认开启。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印。默认关闭。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221955"
+  },
+  {
    "endpoint": "vidu/start-end-to-video-q2-pro",
    "title": "Vidu-首尾帧生视频-q2-pro",
    "task": "image-to-video",
@@ -11532,6 +11607,12 @@
      "key": "seed",
      "type": "NUMBER",
      "description": "随机种子，范围 [0, 2147483647]。"
+    },
+    {
+     "key": "promptExtend",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505922316"
@@ -11658,6 +11739,12 @@
      "key": "seed",
      "type": "NUMBER",
      "description": "随机种子，范围 [0, 2147483647]。"
+    },
+    {
+     "key": "promptExtend",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505575336"
@@ -12597,7 +12684,7 @@
    "outputType": "video",
    "category": "视频生成与处理",
    "vendor": "",
-   "description": "基于开源 MiniMax H3 的 RH Enhanced 多参考视频。支持最多 9 张参考图、3 路参考视频与多路音频，驱动音频与时长必填。",
+   "description": "基于开源 MiniMax H3 的 RH Enhanced 多参考视频。支持最多 9 张参考图、3 路参考视频与多路音频，驱动音频与时长必填。能力说明 https://rh-h3.apps.vibex.cn/deck.html",
    "params": [
     {
      "key": "84##value",
@@ -13332,6 +13419,94 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-454760432"
+  },
+  {
+   "endpoint": "vidu/q4-preview/reference-to-video",
+   "title": "Vidu Q4 Preview 参考生视频",
+   "task": "reference-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "one 参考生视频用于锁定角色、场景和声音后再出片。可上传 1 到 15 张参考图，以及最多 3 段参考音频，按提示词生成主体一致的 3 到 16 秒视频。支持 540p 到 4K 和五种常见画幅，音画可以一起输出，适合短剧对白、广告角色和多主体镜头。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 5000,
+     "description": "视频描述。可用参考图、参考音频说明主体关系。最长 5000 个字符。",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图片，1 到 12 张。支持 JPG、JPEG、PNG、WEBP，单张不超过 50MB。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "audioUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考音频，0 到 3 个。仅 MP3，每段建议 3 到 12 秒，单个不超过 50MB。\n\n支持的文件格式：MP3."
+    },
+    {
+     "key": "duration",
+     "type": "NUMBER",
+     "default": 5,
+     "description": "视频时长（秒）。默认 5 秒，可选 3 到 16 的整数。",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "540p",
+      "720p",
+      "1080p",
+      "2k",
+      "4k"
+     ],
+     "default": "720p",
+     "description": "分辨率。默认 720p，可选 540p、720p、1080p、2k、4k。",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "16:9",
+      "9:16",
+      "1:1",
+      "4:3",
+      "3:4"
+     ],
+     "default": "16:9",
+     "description": "画幅比例。默认 16:9，可选 16:9、9:16、1:1、4:3、3:4。"
+    },
+    {
+     "key": "audio",
+     "type": "LIST",
+     "options": [
+      "true",
+      "false"
+     ],
+     "default": "true",
+     "description": "是否音画同出。开启后输出带台词和音效的视频，关闭后输出静音视频。默认开启。"
+    },
+    {
+     "key": "isRec",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否启用 AI 改写提示词。默认开启。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印。供应商默认会加水印，这里默认关闭，并在请求里显式传 false。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221954"
   },
   {
    "endpoint": "vidu/reference-to-video-q2",
@@ -19075,6 +19250,210 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183159"
   },
   {
+   "endpoint": "alibaba/wan-3.0-prime/text-to-video",
+   "title": "万相3.0高速版-文生视频",
+   "task": "text-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "万相3.0高速版",
+   "description": "万相3.0高速版-文生视频基于阿里巴巴万相 3.0 高速模型（wan3.0-video-prime），仅用文本提示词即可更快生成动作连贯的视频，能力对齐标准版并显著缩短等待时间。原生支持最长 30 秒输出与智能时长，可选 480P/720P/1080P 分辨率、自适应画幅与有声/无声输出。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 20000,
+     "description": "文本提示词，描述期望生成的视频内容。中英文均可，不超过 20000 字符。",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "480P",
+      "720P",
+      "1080P"
+     ],
+     "default": "1080P",
+     "description": "输出分辨率。单价按分辨率区分。",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "adaptive",
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16"
+     ],
+     "default": "adaptive",
+     "description": "画面比例。adaptive 根据意图自动推荐。",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "default": "5",
+     "description": "输出时长（秒），最长 30 秒。auto=智能时长，由模型按内容决定，按实际成片秒数计费。",
+     "required": true
+    },
+    {
+     "key": "audio",
+     "type": "BOOL",
+     "default": true,
+     "description": "输出是否包含音轨。true=有声（默认），false=无声。开关声音价格相同。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "description": "随机种子，范围 [0, 2147483647]。"
+    },
+    {
+     "key": "promptExtend",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221953"
+  },
+  {
+   "endpoint": "alibaba/wan-3.0/text-to-video",
+   "title": "万相3.0-文生视频",
+   "task": "text-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "万相3.0",
+   "description": "万相3.0-文生视频基于阿里巴巴万相 3.0 全能视频模型（wan3.0-video），仅用文本提示词即可生成动作连贯、光影自然的视频，无需参考图或参考视频。原生支持最长 30 秒输出与智能时长，可选 480P/720P/1080P 分辨率、自适应画幅与有声/无声输出，适合广告、短剧与创意故事板。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 20000,
+     "description": "文本提示词，描述期望生成的视频内容。中英文均可，不超过 20000 字符。",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "480P",
+      "720P",
+      "1080P"
+     ],
+     "default": "720P",
+     "description": "输出分辨率。单价按分辨率区分。",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "adaptive",
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16"
+     ],
+     "default": "adaptive",
+     "description": "画面比例。adaptive 根据意图自动推荐。",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "default": "5",
+     "description": "输出时长（秒），最长 30 秒。auto=智能时长，由模型按内容决定，按实际成片秒数计费。",
+     "required": true
+    },
+    {
+     "key": "audio",
+     "type": "BOOL",
+     "default": true,
+     "description": "输出是否包含音轨。true=有声（默认），false=无声。开关声音价格相同。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "description": "随机种子，范围 [0, 2147483647]。"
+    },
+    {
+     "key": "promptExtend",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221952"
+  },
+  {
    "endpoint": "bytedance/seedance-2.5-token/text-to-video",
    "title": "seedance2.5/文生视频 Token",
    "task": "text-to-video",
@@ -23512,12 +23891,13 @@
      "key": "5##分辨率",
      "type": "LIST",
      "options": [
+      "720p",
       "1080p",
       "2K",
       "4K"
      ],
      "default": "1080p",
-     "description": "输出分辨率，按输入画面比例适配、不拉伸。可选 1080p / 2k / 4k",
+     "description": "输出分辨率，按输入画面比例适配、不拉伸。可选 720p / 1080p / 2k / 4k",
      "required": true
     },
     {

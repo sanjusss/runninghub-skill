@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures as cf
 import datetime as dt
+import html
 import json
 import os
 import re
@@ -46,6 +47,11 @@ MODEL_SECTIONS = ("模型API", "标准模型API")
 ALLOWED_HOSTS = ("www.runninghub.cn", "www.runninghub.ai")
 AUTH_QUERY_KEYS = {"rh-comfy-auth", "rh-identify", "q-ak", "q-signature"}
 URL_RE = re.compile(r"https?://[^\s<>\"']+")
+HTML_A_RE = re.compile(
+    r"<a\b[^>]*\bhref\s*=\s*([\"'])([^\"']+)\1[^>]*>(.*?)</a>",
+    re.I | re.S,
+)
+HTML_TAG_RE = re.compile(r"<[^>]+>")
 
 # The doc-tree breadcrumb (segment 3) is the authority for task naming; we
 # only normalise case/merges here. Verify against llms.txt before editing:
@@ -143,6 +149,24 @@ def strip_authenticated_query(url: str) -> str:
 
 
 def sanitize_text(value: str) -> str:
+    """Drop authenticated query strings and HTML from doc text.
+
+    Official blurbs sometimes append an <a> tag. Keep the link as plain text
+    so model descriptions stay readable in `rh.py models --info`.
+    """
+
+    def anchor(match: re.Match) -> str:
+        href = strip_authenticated_query(html.unescape(match.group(2).strip()))
+        text = HTML_TAG_RE.sub("", html.unescape(match.group(3))).strip()
+        if not text or text == href:
+            return href
+        return f"{text} {href}"
+
+    if "<" in value and ">" in value:
+        cleaned = HTML_A_RE.sub(anchor, value)
+        cleaned = HTML_TAG_RE.sub("", cleaned)
+        if cleaned != value:
+            value = re.sub(r"[ \t]{2,}", " ", cleaned).strip()
     return URL_RE.sub(lambda match: strip_authenticated_query(match.group(0)), value)
 
 
