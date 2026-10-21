@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "source": "RunningHub 前端底模枚举（POST https://{www.runninghub.cn,www.runninghub.ai}/api/resource/baseModels，2026-10-02 实测两站各 47 值且一致）映射到 Civitai baseModel 取值",
+    "source": "RunningHub 前端底模枚举（POST https://{www.runninghub.cn,www.runninghub.ai}/api/resource/baseModels，2026-10-21 实测两站各 49 值且一致）映射到 Civitai baseModel 取值",
     "usage": "allow 是该 RunningHub 底模可用的 Civitai baseModel 集合（本地大小写不敏感匹配）；weight 是血统系数，用于候选排序，省略时默认 1.0；allow 为空数组表示 Civitai 上没有兼容 LoRA",
     "matching": "匹配规则见 references/civitai-lora-sync.md"
   },
@@ -41,6 +41,7 @@
   "F2基础": {"allow": ["Flux.2 D"]},
   "Flux2-Klein-9B": {"allow": ["Flux.2 Klein 9B", "Flux.2 Klein 9B-base"]},
   "Flux2-Klein-4B": {"allow": ["Flux.2 Klein 4B", "Flux.2 Klein 4B-base"]},
+  "Flux3-Klein": {"allow": ["Flux.3 Klein", "Flux.3 Klein Base"]},
   "Qwen-image": {"allow": ["Qwen"]},
   "qwen-image-2.1": {"allow": ["Qwen 2.1"], "note": "7B 架构，仅匹配 2.1 专用 LoRA，不兼容旧版 20B Qwen LoRA"},
   "Qwen-Image-2512": {"allow": ["Qwen 2"], "note": "对应关系置信度中"},
@@ -61,6 +62,7 @@
   "Lightricks/LTX-2": {"allow": ["LTXV 2.3"]},
   "Z-image-turbo": {"allow": ["ZImageTurbo"]},
   "Z-image-base": {"allow": ["ZImageBase"]},
+  "moss-image": {"allow": ["MOSS Image"]},
   "anima": {"allow": ["Anima"]},
   "krea2": {"allow": ["Krea 2"]},
   "boogu": {"allow": ["Boogu"]},

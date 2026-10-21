@@ -117,13 +117,14 @@ rh.py workflow <workflowId> \
 
 ## 9. 底模映射与匹配规则
 
-`data/basemodel_map.json` 的键是 `RunningHub` 前端底模枚举名（2026-10-02 从 `www.runninghub.cn` 与 `www.runninghub.ai` 各拉一次，两站一致，共 47 个）。每个条目包含：
+`data/basemodel_map.json` 的键是 `RunningHub` 前端底模枚举名（2026-10-21 从 `www.runninghub.cn` 与 `www.runninghub.ai` 各拉一次，两站一致，共 49 个）。每个条目包含：
 
 - `allow`：允许的 `Civitai` `baseModel` 值列表。`--base` 过滤在本地执行，规则是大小写不敏感的整串匹配；映射表已列出 `768`、`Unclip` 等变体，因此不需要模糊匹配。
 - `weight`：血统系数，供第 4 节公式使用；省略时默认 1.0。
 - `note`：映射的注意事项（置信度、变体提醒）。
 
 `qwen-image-2.1` 仅允许 `Civitai` 的 `Qwen 2.1`。该模型采用 70 亿参数架构，不兼容旧版 200 亿参数 `Qwen` 的 `LoRA`，因此不加入 `Qwen` 或 `Qwen 2`。
+`Flux3-Klein` 对应 `Civitai` 的 `Flux.3 Klein`，同时允许 `Flux.3 Klein Base`，处理方式与 `Flux2-Klein-9B`、`Flux2-Klein-4B` 一致。`moss-image` 对应 `MOSS Image`。
 2026-10-02 核对了 [Civitai 的底模定义](https://github.com/civitai/civitai/blob/2c182051e9ceb16326a4da4488adcb72d14acd4f/packages/civitai-shared/src/basemodel.constants.ts#L3310-L3319)。公开模型接口也已返回 `baseModel` 为 `Qwen 2.1` 的 `LoRA`。
 
 `RunningHub` 公共库版本记录里的 `baseModel` 会出现映射表之外的值（如 `Flux.1`）。匹配不上时把该条目标记为"需人工确认"，不要直接丢弃，也不要硬套到相近底模。
