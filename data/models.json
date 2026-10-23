@@ -1,6 +1,6 @@
 {
  "version": 2,
- "builtAt": "2026-10-16T08:19:42+00:00",
+ "builtAt": "2026-10-23T08:41:38+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
  "total": 379,
  "endpoints": [
@@ -4868,6 +4868,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505922315"
@@ -4980,6 +4986,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505575337"
@@ -11613,6 +11625,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505922316"
@@ -11745,6 +11763,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505575336"
@@ -19347,6 +19371,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221953"
@@ -19449,6 +19479,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221952"
