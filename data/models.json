@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-10-16T08:19:42+00:00",
+ "builtAt": "2026-10-27T09:10:39+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 379,
+ "total": 384,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -4868,6 +4868,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505922315"
@@ -4980,6 +4986,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505575337"
@@ -5766,6 +5778,91 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183113"
+  },
+  {
+   "endpoint": "kling-v4/image-to-video",
+   "title": "可灵图生视频4.0",
+   "task": "image-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "可灵图生视频4.0",
+   "description": "Kling 4.0 图生视频以画面为起点，把静帧推成稳定运动。首帧、尾帧和最多 10 张关键帧可以定住姿态、表情和情节节点，适合产品展示、角色表演和需要卡点的叙事。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 26000,
+     "description": "文本提示词，可包含正向与负向描述。纯英文 ≤ 26000 字符；纯非英文 ≤ 11000 字符；中英混合时需满足 英文字符数 ÷ 26000 + 非英文字符数 ÷ 11000 ≤ 1",
+     "required": true
+    },
+    {
+     "key": "firstImageUrl",
+     "type": "STRING",
+     "description": "支持「仅首帧」和「首帧 + 尾帧」，不支持仅尾帧；即首帧 1 张，尾帧可选 1 张\n\n支持的文件格式：JPG, PNG, JPEG.",
+     "required": true
+    },
+    {
+     "key": "lastImageUrl",
+     "type": "STRING",
+     "description": "lastImageUrl\n\n支持的文件格式：JPG, PNG, JPEG."
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "720p",
+      "1080p"
+     ],
+     "default": "1080p",
+     "description": "resolution",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "LIST",
+     "options": [
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "default": "5",
+     "description": "duration",
+     "required": true
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在成片上添加水印，默认关闭"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-528727899"
   },
   {
    "endpoint": "kling-video-o1/image-to-video",
@@ -10802,6 +10899,96 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-517147131"
   },
   {
+   "endpoint": "kling-v4/custom-element",
+   "title": "可灵 4.0 主体创建",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "创建可灵自定义主体。多图主体需要 1 张正面图和 1 到 3 张其他角度图；视频主体需要 1 段 1080p 参考视频。创建完成后返回主体 ID，供全能视频引用。",
+   "params": [
+    {
+     "key": "elementName",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 20,
+     "description": "主体名称，不能超过 20 个字符",
+     "required": true
+    },
+    {
+     "key": "elementDescription",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 100,
+     "description": "主体描述，不能超过 100 个字符",
+     "required": true
+    },
+    {
+     "key": "referenceType",
+     "type": "LIST",
+     "options": [
+      "image_refer",
+      "video_refer"
+     ],
+     "default": "image_refer",
+     "description": "image_refer 用多张参考图；video_refer 用一段参考视频",
+     "required": true
+    },
+    {
+     "key": "elementImageList",
+     "type": "STRING",
+     "description": "多图主体必填。正面图 1 张，其他角度 1 到 3 张。jpg/jpeg/png，不超过 10MB，宽高都不小于 300px，宽高比 1:2.5 到 2.5:1。"
+    },
+    {
+     "key": "elementVideoList",
+     "type": "STRING",
+     "description": "视频主体必填，只传 1 段。mp4/mov，3 到 8 秒，1080p，16:9 或 9:16，不超过 200MB。\n\n支持的文件格式：MP4, MOV."
+    },
+    {
+     "key": "elementVoiceId",
+     "type": "STRING",
+     "description": "绑定已有音色 ID。不填则不绑定音色。"
+    },
+    {
+     "key": "tagList",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "标签，可多选"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-528727901"
+  },
+  {
+   "endpoint": "kling-v4/custom-voice",
+   "title": "可灵 4.0 音色创建",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "用一段参考音频，或一条已生成视频里的声音，创建自定义音色。创建完成后返回音色 ID 和试听地址。音色 ID 可在全能视频里引用。",
+   "params": [
+    {
+     "key": "voiceName",
+     "type": "STRING",
+     "minLength": 1,
+     "description": "音色名称",
+     "required": true
+    },
+    {
+     "key": "voiceUrl",
+     "type": "STRING",
+     "description": "参考音频公网地址。和 videoId 二选一。",
+     "required": true
+    },
+    {
+     "key": "videoId",
+     "type": "STRING",
+     "description": "已生成视频的 ID，用其中的声音建音色。和 voiceUrl 二选一。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-528727902"
+  },
+  {
    "endpoint": "seedream-v5-flash/image-to-image",
    "title": "seedream-v5-flash-图生图",
    "task": "other",
@@ -11613,6 +11800,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505922316"
@@ -11745,6 +11938,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-505575336"
@@ -11927,6 +12126,117 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-498749503"
+  },
+  {
+   "endpoint": "kling-v4/omni-video",
+   "title": "可灵全能视频4.0",
+   "task": "reference-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "Kling 4.0 全能视频把图片、视频、主体和音色放进同一次生成。单次最多 15 项参考，用来锁定形象、动作、运镜和节奏，也能在原片上改主体、背景和风格，把已有创意复刻成自己的成片。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 26000,
+     "description": "文本提示词，可包含正向与负向描述。纯英文 ≤ 26000 字符；纯非英文 ≤ 11000 字符；中英混合时需满足 英文字符数 ÷ 26000 + 非英文字符数 ÷ 11000 ≤ 1",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "图片总数不超过 10 张\n\n支持的文件格式：JPG, PNG, JPEG."
+    },
+    {
+     "key": "videoUrl",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考视频，最多 5 段。只支持公网 URL。\n\n支持的文件格式：MP4, MOV."
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "720p",
+      "1080p"
+     ],
+     "default": "1080p",
+     "description": "resolution",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "LIST",
+     "options": [
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "default": "5",
+     "description": "duration",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "21:9",
+      "16:9",
+      "1:1",
+      "9:16",
+      "adaptive"
+     ],
+     "default": "adaptive",
+     "description": "aspectRatio"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在成片上添加水印，默认关闭"
+    },
+    {
+     "key": "elementIds",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "主体 ID，最多 7 个。按传入顺序在提示词里用 @element_1、@element_2 引用。视频角色主体不超过 3 个；有视频角色主体时，这些主体加参考视频不超过 5 个。"
+    },
+    {
+     "key": "voiceIds",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "音色 ID，最多 3 个。按传入顺序编号为 1、2、3，在提示词里用 @1、@2、@3 引用。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-528727900"
   },
   {
    "endpoint": "kling-video-o1-std/refrence-to-video",
@@ -19347,6 +19657,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221953"
@@ -19449,6 +19765,12 @@
      "type": "BOOL",
      "default": true,
      "description": "是否开启 prompt 智能改写。开启后使用大模型对输入 prompt 进行智能改写。对于较短的 prompt 生成效果提升明显，但会增加耗时。true：默认值，开启智能改写。false：不开启智能改写。传入 fileUrl 或 linkUrl 时必须为 true。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加水印标识。false：默认值，不添加水印。true：添加水印。"
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-522221952"
@@ -20220,6 +20542,93 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183164"
+  },
+  {
+   "endpoint": "kling-v4/text-to-video",
+   "title": "可灵文生视频4.0",
+   "task": "text-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "可灵文生视频4.0",
+   "description": "Kling 4.0 文生视频把一句灵感扩成最长 30 秒的连贯成片。大幅度动作、复杂运镜和人物情绪更稳，并带双通道立体声与更准的口型同步，适合从短镜头走到完整叙事。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 26000,
+     "description": "文本提示词，可包含正向与负向描述。纯英文 ≤ 26000 字符；纯非英文 ≤ 11000 字符；中英混合时需满足 英文字符数 ÷ 26000 + 非英文字符数 ÷ 11000 ≤ 1",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "720p",
+      "1080p"
+     ],
+     "default": "1080p",
+     "description": "resolution",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "LIST",
+     "options": [
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "29",
+      "30"
+     ],
+     "default": "5",
+     "description": "duration",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "21:9",
+      "16:9",
+      "1:1",
+      "9:16"
+     ],
+     "default": "16:9",
+     "description": "aspectRatio",
+     "required": true
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在成片上添加水印，默认关闭"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-528727898"
   },
   {
    "endpoint": "kling-video-o1/text-to-video",
