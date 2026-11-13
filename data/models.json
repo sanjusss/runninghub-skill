@@ -1,8 +1,8 @@
 {
  "version": 2,
- "builtAt": "2026-10-27T09:10:39+00:00",
+ "builtAt": "2026-11-13T11:15:55+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 384,
+ "total": 421,
  "endpoints": [
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
@@ -1809,6 +1809,103 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-465292106"
+  },
+  {
+   "endpoint": "dola-Seedream-5.5/image-to-image",
+   "title": "Dola-Seedream-5.5-图生图",
+   "task": "image-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "Dola",
+   "description": "Seedream 5.5 图生图支持最多 10 张参考图，不要求输入图带透明通道。分辨率支持 1K、1.5K、2K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 5000,
+     "description": "编辑或融合指令",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "宽，240 到 11520。与 height 相乘须在 921600 到 8294400，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "高，240 到 11520。与 width 相乘须在 921600 到 8294400，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，1 到 10 张\n\n支持的文件格式：PNG, JPEG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1K",
+      "1.5K",
+      "2K"
+     ],
+     "default": "2K",
+     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K，默认 2K。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "png",
+      "jpeg"
+     ],
+     "default": "png",
+     "description": "输出图片格式，png 或 jpeg，默认 png。"
+    },
+    {
+     "key": "watermark",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否添加水印。true 或 false，默认 false。不选也按 false 提交。"
+    },
+    {
+     "key": "background",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "transparent",
+      "opaque"
+     ],
+     "default": "auto",
+     "description": "背景。auto 由模型根据提示词和输出格式决定。outputFormat 为 jpeg 时 auto 输出不透明图，transparent 与 jpeg 不能同时使用。opaque 为不透明底。默认 auto。"
+    },
+    {
+     "key": "optimizePromptMode",
+     "type": "LIST",
+     "options": [
+      "standard"
+     ],
+     "default": "standard",
+     "description": "提示词优化。只支持 standard。不选也按 standard 提交。传入 fast 上游报错。"
+    },
+    {
+     "key": "safetyIdentifier",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 64,
+     "description": "终端用户的固定英文标识，最长 64。建议传哈希，例如 sha256_user_abc123。留空不传给上游。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-535396531"
   },
   {
    "endpoint": "rhart-image-g-1.5-official/image-to-image",
@@ -3709,6 +3806,103 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-494858277"
+  },
+  {
+   "endpoint": "seedream-v5.5/image-to-image",
+   "title": "seedream-v5.5-图生图",
+   "task": "image-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "seedream",
+   "description": "Seedream 5.5 图生图支持最多 10 张参考图，不要求输入图带透明通道。分辨率支持 1K、1.5K、2K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 5000,
+     "description": "编辑或融合指令",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "宽，240 到 8595。与 height 相乘须在 921600 到 4624220，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "高，240 到 8595。与 width 相乘须在 921600 到 4624220，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，1 到 10 张\n\n支持的文件格式：PNG, JPEG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1K",
+      "1.5K",
+      "2K"
+     ],
+     "default": "2K",
+     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K，默认 2K。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "png",
+      "jpeg"
+     ],
+     "default": "png",
+     "description": "输出图片格式，png 或 jpeg，默认 png。"
+    },
+    {
+     "key": "watermark",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否添加水印。true 或 false，默认 false。不选也按 false 提交。"
+    },
+    {
+     "key": "background",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "transparent",
+      "opaque"
+     ],
+     "default": "auto",
+     "description": "背景。auto 由模型根据提示词和输出格式决定。outputFormat 为 jpeg 时 auto 输出不透明图，transparent 与 jpeg 不能同时使用。opaque 为不透明底。默认 auto。"
+    },
+    {
+     "key": "optimizePromptMode",
+     "type": "LIST",
+     "options": [
+      "standard"
+     ],
+     "default": "standard",
+     "description": "提示词优化。只支持 standard。不选也按 standard 提交。传入 fast 上游报错。"
+    },
+    {
+     "key": "safetyIdentifier",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 64,
+     "description": "终端用户的固定英文标识，最长 64。建议传哈希，例如 sha256_user_abc123。留空不传给上游。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-535396530"
   },
   {
    "endpoint": "topazlabs/image-gigapixel-text-and-shapes",
@@ -9973,6 +10167,184 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183265"
   },
   {
+   "endpoint": "dola-Seedream-5.5/layer-decomposition",
+   "title": "Dola-Seedream-5.5-图层拆分",
+   "task": "image-tools",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "",
+   "description": "Seedream 5.5 图层拆分把单张图片拆成 1 张底图和最多 99 个图层，并返回层级、包围盒，以及开启文字识别后的文字内容。最多输出张数可设为 2 到 100，默认 30。分辨率只支持 auto、1K、1.5K、2K。不暴露图层开关，请求固定为图层拆分。不支持背景参数。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "待拆分的单张图片\n\n支持的文件格式：PNG, JPEG, WEBP, BMP, TIFF, GIF.",
+     "required": true
+    },
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 2000,
+     "description": "可选。描述要拆出的元素；留空则自动识别主要元素"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "1K",
+      "1.5K",
+      "2K"
+     ],
+     "default": "auto",
+     "description": "只支持档位，不支持宽高像素。取值 auto、1K、1.5K、2K，默认 auto。auto 按底图和每个图层各自的原始尺寸处理：在 921600 到 4624220 之间保持原尺寸，小于 1K 抬到 1K，大于 2K 压到 2K，各自宽高比不变。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "png",
+      "jpeg"
+     ],
+     "default": "png",
+     "description": "底图输出格式，png 或 jpeg，默认 png。图层固定为 png。"
+    },
+    {
+     "key": "watermark",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否添加水印。true 或 false，默认 false。不选也按 false 提交。"
+    },
+    {
+     "key": "optimizePromptMode",
+     "type": "LIST",
+     "options": [
+      "standard"
+     ],
+     "default": "standard",
+     "description": "提示词优化。只支持 standard。不选也按 standard 提交。传入 fast 上游报错。"
+    },
+    {
+     "key": "safetyIdentifier",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 64,
+     "description": "终端用户的固定英文标识，最长 64。建议传哈希，例如 sha256_user_abc123。留空不传给上游。"
+    },
+    {
+     "key": "maxImages",
+     "type": "NUMBER",
+     "default": 30,
+     "description": "图层拆分最多输出张数，含底图。范围 2 到 100，默认 30。限流按该值预扣。"
+    },
+    {
+     "key": "textRecognition",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否识别图层中的文字。true 或 false，默认 false。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-535396533"
+  },
+  {
+   "endpoint": "seedream-v5.5/layer-decomposition",
+   "title": "seedream-v5.5-图层拆分",
+   "task": "image-tools",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "",
+   "description": "Seedream 5.5 图层拆分把单张图片拆成 1 张底图和最多 99 个图层，并返回层级、包围盒，以及开启文字识别后的文字内容。最多输出张数可设为 2 到 100，默认 30。分辨率只支持 auto、1K、1.5K、2K。不暴露图层开关，请求固定为图层拆分。不支持背景参数。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "待拆分的单张图片\n\n支持的文件格式：PNG, JPEG, WEBP, BMP, TIFF, GIF.",
+     "required": true
+    },
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 2000,
+     "description": "可选。描述要拆出的元素；留空则自动识别主要元素"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "1K",
+      "1.5K",
+      "2K"
+     ],
+     "default": "auto",
+     "description": "只支持档位，不支持宽高像素。取值 auto、1K、1.5K、2K，默认 auto。auto 按底图和每个图层各自的原始尺寸处理：在 921600 到 4624220 之间保持原尺寸，小于 1K 抬到 1K，大于 2K 压到 2K，各自宽高比不变。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "png",
+      "jpeg"
+     ],
+     "default": "png",
+     "description": "底图输出格式，png 或 jpeg，默认 png。图层固定为 png。"
+    },
+    {
+     "key": "watermark",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否添加水印。true 或 false，默认 false。不选也按 false 提交。"
+    },
+    {
+     "key": "optimizePromptMode",
+     "type": "LIST",
+     "options": [
+      "standard"
+     ],
+     "default": "standard",
+     "description": "提示词优化。只支持 standard。不选也按 standard 提交。传入 fast 上游报错。"
+    },
+    {
+     "key": "safetyIdentifier",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 64,
+     "description": "终端用户的固定英文标识，最长 64。建议传哈希，例如 sha256_user_abc123。留空不传给上游。"
+    },
+    {
+     "key": "maxImages",
+     "type": "NUMBER",
+     "default": 30,
+     "description": "图层拆分最多输出张数，含底图。范围 2 到 100，默认 30。限流按该值预扣。"
+    },
+    {
+     "key": "textRecognition",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否识别图层中的文字。true 或 false，默认 false。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-535396532"
+  },
+  {
    "endpoint": "topazlabs/image-gigapixel-low-resolution-2",
    "title": "topazlabs图像放大Low Resolution v2",
    "task": "image-tools",
@@ -10989,6 +11361,339 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-528727902"
   },
   {
+   "endpoint": "minimax/h3-image-highspeed/image-edit",
+   "title": "MiniMax-H3-Image 极速图片编辑",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "MiniMax-H3-Image 极速版图片编辑。用 1 到 16 张参考图和提示词生成新图。尺寸传 size，填 auto 或宽x高，单次最多 10 张。图片编辑始终开启提示词增强。模型为 MiniMax-H3-Image-Highspeed，按文本输入、参考图输入和图片输出的实际 token 计费。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 32000,
+     "description": "画面描述，最长 32000 个字符。",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，1 到 16 张。添加顺序对应提示词里的图1、图2。",
+     "required": true
+    },
+    {
+     "key": "size",
+     "type": "STRING",
+     "maxLength": 32,
+     "description": "输出尺寸。填 auto，或填宽x高，例如 2720x1536。auto 时由模型按默认 4K 决定实际宽高。自定义时宽乘高须在 655360 到 20000000 之间，宽高比在 1:3 到 3:1 之间。"
+    },
+    {
+     "key": "n",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "生成张数，1 到 10，默认 1。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png",
+      "webp"
+     ],
+     "default": "jpeg",
+     "description": "输出格式，默认 jpeg。"
+    },
+    {
+     "key": "outputCompression",
+     "type": "NUMBER",
+     "default": 95,
+     "description": "压缩质量，0 到 100，默认 95。只对 jpeg 和 webp 生效。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加可见的 AIGC 水印，默认关闭。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-536424718"
+  },
+  {
+   "endpoint": "minimax/h3-image-highspeed/text-to-image",
+   "title": "MiniMax-H3-Image 极速文生图",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "MiniMax-H3-Image 极速版文生图。按提示词生成图片。尺寸传 size，填 auto 或宽x高，单次最多 10 张。默认开启提示词增强。模型为 MiniMax-H3-Image-Highspeed，按文本输入和图片输出的实际 token 计费。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 32000,
+     "description": "画面描述，最长 32000 个字符。",
+     "required": true
+    },
+    {
+     "key": "size",
+     "type": "STRING",
+     "maxLength": 32,
+     "description": "输出尺寸。填 auto，或填宽x高，例如 2720x1536。auto 时由模型按默认 4K 决定实际宽高。自定义时宽乘高须在 655360 到 20000000 之间，宽高比在 1:3 到 3:1 之间。"
+    },
+    {
+     "key": "n",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "生成张数，1 到 10，默认 1。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png",
+      "webp"
+     ],
+     "default": "jpeg",
+     "description": "输出格式，默认 jpeg。"
+    },
+    {
+     "key": "outputCompression",
+     "type": "NUMBER",
+     "default": 95,
+     "description": "压缩质量，0 到 100，默认 95。只对 jpeg 和 webp 生效。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加可见的 AIGC 水印，默认关闭。"
+    },
+    {
+     "key": "disablePromptEnhanced",
+     "type": "BOOL",
+     "default": false,
+     "description": "关闭提示词增强。关闭时 size 必须是宽x高，不能是 auto，否则官方返回 400。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-536424719"
+  },
+  {
+   "endpoint": "minimax/h3-image/image-edit",
+   "title": "MiniMax-H3-Image 图片编辑",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "MiniMax-H3-Image 标准版图片编辑。用 1 到 16 张参考图和提示词生成新图。尺寸传 size，填 auto 或宽x高，单次最多 10 张。图片编辑始终开启提示词增强，按文本输入、参考图输入和图片输出的实际 token 计费。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 32000,
+     "description": "画面描述，最长 32000 个字符。",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，1 到 16 张。添加顺序对应提示词里的图1、图2。",
+     "required": true
+    },
+    {
+     "key": "size",
+     "type": "STRING",
+     "maxLength": 32,
+     "description": "输出尺寸。填 auto，或填宽x高，例如 2720x1536。auto 时由模型按默认 4K 决定实际宽高。自定义时宽乘高须在 655360 到 20000000 之间，宽高比在 1:3 到 3:1 之间。"
+    },
+    {
+     "key": "n",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "生成张数，1 到 10，默认 1。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png",
+      "webp"
+     ],
+     "default": "jpeg",
+     "description": "输出格式，默认 jpeg。"
+    },
+    {
+     "key": "outputCompression",
+     "type": "NUMBER",
+     "default": 95,
+     "description": "压缩质量，0 到 100，默认 95。只对 jpeg 和 webp 生效。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加可见的 AIGC 水印，默认关闭。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-536424720"
+  },
+  {
+   "endpoint": "minimax/h3-image/text-to-image",
+   "title": "MiniMax-H3-Image 文生图",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "MiniMax-H3-Image 标准版文生图。按提示词生成图片。尺寸传 size，填 auto 或宽x高，单次最多 10 张。默认开启提示词增强，按文本输入和图片输出的实际 token 计费。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 32000,
+     "description": "画面描述，最长 32000 个字符。",
+     "required": true
+    },
+    {
+     "key": "size",
+     "type": "STRING",
+     "maxLength": 32,
+     "description": "输出尺寸。填 auto，或填宽x高，例如 2720x1536。auto 时由模型按默认 4K 决定实际宽高。自定义时宽乘高须在 655360 到 20000000 之间，宽高比在 1:3 到 3:1 之间。"
+    },
+    {
+     "key": "n",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "生成张数，1 到 10，默认 1。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "jpeg",
+      "png",
+      "webp"
+     ],
+     "default": "jpeg",
+     "description": "输出格式，默认 jpeg。"
+    },
+    {
+     "key": "outputCompression",
+     "type": "NUMBER",
+     "default": 95,
+     "description": "压缩质量，0 到 100，默认 95。只对 jpeg 和 webp 生效。"
+    },
+    {
+     "key": "watermark",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否添加可见的 AIGC 水印，默认关闭。"
+    },
+    {
+     "key": "disablePromptEnhanced",
+     "type": "BOOL",
+     "default": false,
+     "description": "关闭提示词增强。关闭时 size 必须是宽x高，不能是 auto，否则官方返回 400。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-536424721"
+  },
+  {
+   "endpoint": "miora-3d/image-to-3d",
+   "title": "Miora-3D 图生3D",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Miora-3D 图生3D 是腾讯推出的图像转三维模型，上传一张主体图片即可还原出带纹理的完整 3D 模型。除主视图外，还可补充左、右、后、顶、底及斜前方等多视角图片，帮助模型补全单图看不到的背面与侧面细节，让复杂、非对称物体的几何还原更准确。支持白模与带纹理双模式、可选 PBR 物理材质及 3 千到 150 万面数调节，并同时输出 GLB 与 OBJ 格式，适合电商商品建模、游戏资产制作与数字孪生场景。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图片（主视图/正视图）。单边分辨率 128-5000，≤10MB，支持 JPG/JPEG/PNG/WEBP\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "multiViewImages",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "多视角补充图片（可选，最多 7 组，每个视角最多 1 张；主图 imageUrl 视为正视图）"
+    },
+    {
+     "key": "generateType",
+     "type": "LIST",
+     "options": [
+      "normal",
+      "geometry"
+     ],
+     "default": "normal",
+     "description": "生成类型：normal 生成带纹理的几何模型；geometry 生成不带纹理的白模（此时 enablePbr 不生效）",
+     "required": true
+    },
+    {
+     "key": "faceCount",
+     "type": "NUMBER",
+     "default": 500000,
+     "description": "模型面数，范围 3000-1500000，默认 500000"
+    },
+    {
+     "key": "enablePbr",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成 PBR 物理材质（generateType=geometry 时不生效）",
+     "required": true
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-536424716"
+  },
+  {
+   "endpoint": "miora-3d/text-to-3d",
+   "title": "Miora-3D 文生3D",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Miora-3D 文生3D 是腾讯推出的三维资产生成模型，只需一段中文描述，即可直接生成带完整纹理的 3D 模型。它支持在带纹理模型与白模之间自由切换，并可按需开启 PBR 物理材质，面数可在 3 千到 150 万之间灵活调节，兼顾轻量化与高精度。一次生成同时交付 GLB 与 OBJ 等通用格式，适合游戏道具、电商商品、虚拟服饰与创意原型的快速建模。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "3D 内容描述（中文正向提示词，最多 1024 字符）",
+     "required": true
+    },
+    {
+     "key": "generateType",
+     "type": "LIST",
+     "options": [
+      "normal",
+      "geometry"
+     ],
+     "default": "normal",
+     "description": "生成类型：normal 生成带纹理的几何模型；geometry 生成不带纹理的白模（此时 enablePbr 不生效）",
+     "required": true
+    },
+    {
+     "key": "faceCount",
+     "type": "NUMBER",
+     "default": 500000,
+     "description": "模型面数，范围 3000-1500000，默认 500000"
+    },
+    {
+     "key": "enablePbr",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成 PBR 物理材质（generateType=geometry 时不生效）",
+     "required": true
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-536424717"
+  },
+  {
    "endpoint": "seedream-v5-flash/image-to-image",
    "title": "seedream-v5-flash-图生图",
    "task": "other",
@@ -11147,6 +11852,2465 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-519905082"
+  },
+  {
+   "endpoint": "tripo-h/image-to-3d-v2.5",
+   "title": "tripo/图生3D-H-v2.5",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列单图生成高保真 3D，支持自动修图、贴图对齐与朝向对齐。输入为图片公网 URL。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图公网直链 URL（不支持 file_token）。主体清晰、遮挡少；PNG/JPEG/WebP，≤20MB，建议 ≥256×256，背景干净。Gaussian Splat：单张图生成 .splat，约固定 30 积分。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "enableImageAutofix",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在生成前自动优化低分辨率/低质量输入图以改善 3D 效果。默认 false。图生/多视图可用。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v2.5）三角面上限 50 万（无超清档）。本版本无 quad / smart_low_poly。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680743"
+  },
+  {
+   "endpoint": "tripo-h/image-to-3d-v3.0",
+   "title": "tripo/图生3D-H-v3.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列单图生成高保真 3D，支持自动修图、贴图对齐与朝向对齐。输入为图片公网 URL。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图公网直链 URL（不支持 file_token）。主体清晰、遮挡少；PNG/JPEG/WebP，≤20MB，建议 ≥256×256，背景干净。Gaussian Splat：单张图生成 .splat，约固定 30 积分。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "enableImageAutofix",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在生成前自动优化低分辨率/低质量输入图以改善 3D 效果。默认 false。图生/多视图可用。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v3.0）三角面：标准档（geometryQuality=standard）上限 100 万；超清档（detailed）上限 200 万。开启 quad 时上限 15 万。smart_low_poly=true 时官方：三角 500–2 万，四边 500–1 万（条件档超限由 Tripo 报错）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "geometryQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed"
+     ],
+     "default": "standard",
+     "description": "几何质量。standard=标准；detailed=超清(Ultra)，面数上限更高（见 faceLimit 说明）。仅本 H≥v3 SKU 生效。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。开启后 faceLimit 上限 15 万；未设 faceLimit 时默认约 1 万面；输出强制 FBX。与 generate_parts 等互斥规则见官方文档。"
+    },
+    {
+     "key": "smartLowPoly",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成手工风格、干净拓扑的低面数模型。默认 false。开启后面数与版本无关：三角 500–20,000，四边 500–10,000；与 generate_parts 互斥时本项优先。"
+    },
+    {
+     "key": "generateParts",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成可编辑的分割部件。默认 false。【生效条件】仅 model≥v3.0；且必须 texture=false、pbr=false、quad=false（三者任一为 true 则不兼容）。P 系列无此参数。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680744"
+  },
+  {
+   "endpoint": "tripo-h/image-to-3d-v3.1",
+   "title": "tripo/图生3D-H-v3.1",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列单图生成高保真 3D，支持自动修图、贴图对齐与朝向对齐。输入为图片公网 URL。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图公网直链 URL（不支持 file_token）。主体清晰、遮挡少；PNG/JPEG/WebP，≤20MB，建议 ≥256×256，背景干净。Gaussian Splat：单张图生成 .splat，约固定 30 积分。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "enableImageAutofix",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在生成前自动优化低分辨率/低质量输入图以改善 3D 效果。默认 false。图生/多视图可用。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v3.1）三角面：标准档（geometryQuality=standard）上限 150 万；超清档（detailed）上限 200 万。开启 quad 时上限 15 万。smart_low_poly=true 时官方：三角 500–2 万，四边 500–1 万（条件档超限由 Tripo 报错）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "geometryQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed"
+     ],
+     "default": "standard",
+     "description": "几何质量。standard=标准；detailed=超清(Ultra)，面数上限更高（见 faceLimit 说明）。仅本 H≥v3 SKU 生效。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。开启后 faceLimit 上限 15 万；未设 faceLimit 时默认约 1 万面；输出强制 FBX。与 generate_parts 等互斥规则见官方文档。"
+    },
+    {
+     "key": "smartLowPoly",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成手工风格、干净拓扑的低面数模型。默认 false。开启后面数与版本无关：三角 500–20,000，四边 500–10,000；与 generate_parts 互斥时本项优先。"
+    },
+    {
+     "key": "generateParts",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成可编辑的分割部件。默认 false。【生效条件】仅 model≥v3.0；且必须 texture=false、pbr=false、quad=false（三者任一为 true 则不兼容）。P 系列无此参数。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680745"
+  },
+  {
+   "endpoint": "tripo-h/multiview-to-3d-v2.5",
+   "title": "tripo/多视图生3D-H-v2.5",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列多视图生 3D。view-key 或复用多视图 task_id（互斥），由 TripoAdapter 拼装 inputs。",
+   "params": [
+    {
+     "key": "inputMode",
+     "type": "LIST",
+     "options": [
+      "views",
+      "multiviewTaskId"
+     ],
+     "default": "views",
+     "description": "多视图输入方式：views=上传前/左/后/右（view-key，正面必填且至少再有一视角）；multiviewTaskId=复用 generate_multiview_image / edit_multiview_image 成功任务。二者互斥，不可与 view-key 混用。",
+     "required": true
+    },
+    {
+     "key": "frontImageUrl",
+     "type": "STRING",
+     "description": "正面图公网 URL。inputMode=views 时必填；支持 PNG/JPEG/WebP，≤20MB。服务端规范视角顺序为 正/左/背/右。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "leftImageUrl",
+     "type": "STRING",
+     "description": "左侧图公网 URL（可选）。inputMode=views；与其它视角组成多视图（至少 2 张含正面）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "backImageUrl",
+     "type": "STRING",
+     "description": "背面图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "rightImageUrl",
+     "type": "STRING",
+     "description": "右侧图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "multiviewTaskId",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "复用此前 generate_multiview_image / edit_multiview_image 且 status=success 的 task_id。与 views 图片输入互斥；仅单元素 task_id，不可混用 view-key。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v2.5）三角面上限 50 万（无超清档）。本版本无 quad / smart_low_poly。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680746"
+  },
+  {
+   "endpoint": "tripo-h/multiview-to-3d-v3.0",
+   "title": "tripo/多视图生3D-H-v3.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列多视图生 3D。view-key 或复用多视图 task_id（互斥），由 TripoAdapter 拼装 inputs。",
+   "params": [
+    {
+     "key": "inputMode",
+     "type": "LIST",
+     "options": [
+      "views",
+      "multiviewTaskId"
+     ],
+     "default": "views",
+     "description": "多视图输入方式：views=上传前/左/后/右（view-key，正面必填且至少再有一视角）；multiviewTaskId=复用 generate_multiview_image / edit_multiview_image 成功任务。二者互斥，不可与 view-key 混用。",
+     "required": true
+    },
+    {
+     "key": "frontImageUrl",
+     "type": "STRING",
+     "description": "正面图公网 URL。inputMode=views 时必填；支持 PNG/JPEG/WebP，≤20MB。服务端规范视角顺序为 正/左/背/右。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "leftImageUrl",
+     "type": "STRING",
+     "description": "左侧图公网 URL（可选）。inputMode=views；与其它视角组成多视图（至少 2 张含正面）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "backImageUrl",
+     "type": "STRING",
+     "description": "背面图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "rightImageUrl",
+     "type": "STRING",
+     "description": "右侧图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "multiviewTaskId",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "复用此前 generate_multiview_image / edit_multiview_image 且 status=success 的 task_id。与 views 图片输入互斥；仅单元素 task_id，不可混用 view-key。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v3.0）三角面：标准档（geometryQuality=standard）上限 100 万；超清档（detailed）上限 200 万。开启 quad 时上限 15 万。smart_low_poly=true 时官方：三角 500–2 万，四边 500–1 万（条件档超限由 Tripo 报错）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "geometryQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed"
+     ],
+     "default": "standard",
+     "description": "几何质量。standard=标准；detailed=超清(Ultra)，面数上限更高（见 faceLimit 说明）。仅本 H≥v3 SKU 生效。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。开启后 faceLimit 上限 15 万；未设 faceLimit 时默认约 1 万面；输出强制 FBX。与 generate_parts 等互斥规则见官方文档。"
+    },
+    {
+     "key": "smartLowPoly",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成手工风格、干净拓扑的低面数模型。默认 false。开启后面数与版本无关：三角 500–20,000，四边 500–10,000；与 generate_parts 互斥时本项优先。"
+    },
+    {
+     "key": "generateParts",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成可编辑的分割部件。默认 false。【生效条件】仅 model≥v3.0；且必须 texture=false、pbr=false、quad=false（三者任一为 true 则不兼容）。P 系列无此参数。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680747"
+  },
+  {
+   "endpoint": "tripo-h/multiview-to-3d-v3.1",
+   "title": "tripo/多视图生3D-H-v3.1",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列多视图生 3D。view-key 或复用多视图 task_id（互斥），由 TripoAdapter 拼装 inputs。",
+   "params": [
+    {
+     "key": "inputMode",
+     "type": "LIST",
+     "options": [
+      "views",
+      "multiviewTaskId"
+     ],
+     "default": "views",
+     "description": "多视图输入方式：views=上传前/左/后/右（view-key，正面必填且至少再有一视角）；multiviewTaskId=复用 generate_multiview_image / edit_multiview_image 成功任务。二者互斥，不可与 view-key 混用。",
+     "required": true
+    },
+    {
+     "key": "frontImageUrl",
+     "type": "STRING",
+     "description": "正面图公网 URL。inputMode=views 时必填；支持 PNG/JPEG/WebP，≤20MB。服务端规范视角顺序为 正/左/背/右。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "leftImageUrl",
+     "type": "STRING",
+     "description": "左侧图公网 URL（可选）。inputMode=views；与其它视角组成多视图（至少 2 张含正面）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "backImageUrl",
+     "type": "STRING",
+     "description": "背面图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "rightImageUrl",
+     "type": "STRING",
+     "description": "右侧图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "multiviewTaskId",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "复用此前 generate_multiview_image / edit_multiview_image 且 status=success 的 task_id。与 views 图片输入互斥；仅单元素 task_id，不可混用 view-key。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v3.1）三角面：标准档（geometryQuality=standard）上限 150 万；超清档（detailed）上限 200 万。开启 quad 时上限 15 万。smart_low_poly=true 时官方：三角 500–2 万，四边 500–1 万（条件档超限由 Tripo 报错）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "geometryQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed"
+     ],
+     "default": "standard",
+     "description": "几何质量。standard=标准；detailed=超清(Ultra)，面数上限更高（见 faceLimit 说明）。仅本 H≥v3 SKU 生效。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。开启后 faceLimit 上限 15 万；未设 faceLimit 时默认约 1 万面；输出强制 FBX。与 generate_parts 等互斥规则见官方文档。"
+    },
+    {
+     "key": "smartLowPoly",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成手工风格、干净拓扑的低面数模型。默认 false。开启后面数与版本无关：三角 500–20,000，四边 500–10,000；与 generate_parts 互斥时本项优先。"
+    },
+    {
+     "key": "generateParts",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成可编辑的分割部件。默认 false。【生效条件】仅 model≥v3.0；且必须 texture=false、pbr=false、quad=false（三者任一为 true 则不兼容）。P 系列无此参数。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680748"
+  },
+  {
+   "endpoint": "tripo-h/text-to-3d-v2.5",
+   "title": "tripo/文生3D-H-v2.5",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列文本生成高保真 3D 模型，固定 model=v2.5-20250123，可选 PBR、超清几何、四边面与智能低模。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本提示词，最多 1024 字符。请描述外形、材质、风格与尺度。好例：带铁铰链与锈锁的低模中世纪木宝箱；差例：一个盒子。加入材质/风格描述有助于 PBR 效果。",
+     "required": true
+    },
+    {
+     "key": "imageSeed",
+     "type": "NUMBER",
+     "description": "内部文生图阶段随机种子。控制由文本生成的参考图；相同种子+相同输入可复现。不填则每次随机。"
+    },
+    {
+     "key": "negativePrompt",
+     "type": "STRING",
+     "maxLength": 255,
+     "description": "反向提示词，最多 255 字符。描述不希望出现在模型中的内容，如：模糊、低质量、破损网格。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v2.5）三角面上限 50 万（无超清档）。本版本无 quad / smart_low_poly。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680749"
+  },
+  {
+   "endpoint": "tripo-h/text-to-3d-v3.0",
+   "title": "tripo/文生3D-H-v3.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列文本生成高保真 3D 模型，固定 model=v3.0-20250812，可选 PBR、超清几何、四边面与智能低模。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本提示词，最多 1024 字符。请描述外形、材质、风格与尺度。好例：带铁铰链与锈锁的低模中世纪木宝箱；差例：一个盒子。加入材质/风格描述有助于 PBR 效果。",
+     "required": true
+    },
+    {
+     "key": "imageSeed",
+     "type": "NUMBER",
+     "description": "内部文生图阶段随机种子。控制由文本生成的参考图；相同种子+相同输入可复现。不填则每次随机。"
+    },
+    {
+     "key": "negativePrompt",
+     "type": "STRING",
+     "maxLength": 255,
+     "description": "反向提示词，最多 255 字符。描述不希望出现在模型中的内容，如：模糊、低质量、破损网格。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v3.0）三角面：标准档（geometryQuality=standard）上限 100 万；超清档（detailed）上限 200 万。开启 quad 时上限 15 万。smart_low_poly=true 时官方：三角 500–2 万，四边 500–1 万（条件档超限由 Tripo 报错）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "geometryQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed"
+     ],
+     "default": "standard",
+     "description": "几何质量。standard=标准；detailed=超清(Ultra)，面数上限更高（见 faceLimit 说明）。仅本 H≥v3 SKU 生效。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。开启后 faceLimit 上限 15 万；未设 faceLimit 时默认约 1 万面；输出强制 FBX。与 generate_parts 等互斥规则见官方文档。"
+    },
+    {
+     "key": "smartLowPoly",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成手工风格、干净拓扑的低面数模型。默认 false。开启后面数与版本无关：三角 500–20,000，四边 500–10,000；与 generate_parts 互斥时本项优先。"
+    },
+    {
+     "key": "generateParts",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成可编辑的分割部件。默认 false。【生效条件】仅 model≥v3.0；且必须 texture=false、pbr=false、quad=false（三者任一为 true 则不兼容）。P 系列无此参数。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680750"
+  },
+  {
+   "endpoint": "tripo-h/text-to-3d-v3.1",
+   "title": "tripo/文生3D-H-v3.1",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo H 系列文本生成高保真 3D 模型，固定 model=v3.1-20260211，可选 PBR、超清几何、四边面与智能低模。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本提示词，最多 1024 字符。请描述外形、材质、风格与尺度。好例：带铁铰链与锈锁的低模中世纪木宝箱；差例：一个盒子。加入材质/风格描述有助于 PBR 效果。",
+     "required": true
+    },
+    {
+     "key": "imageSeed",
+     "type": "NUMBER",
+     "description": "内部文生图阶段随机种子。控制由文本生成的参考图；相同种子+相同输入可复现。不填则每次随机。"
+    },
+    {
+     "key": "negativePrompt",
+     "type": "STRING",
+     "maxLength": 255,
+     "description": "反向提示词，最多 255 字符。描述不希望出现在模型中的内容，如：模糊、低质量、破损网格。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏 5万–10万；Web/移动 1万–5万。本 SKU（H v3.1）三角面：标准档（geometryQuality=standard）上限 150 万；超清档（detailed）上限 200 万。开启 quad 时上限 15 万。smart_low_poly=true 时官方：三角 500–2 万，四边 500–1 万（条件档超限由 Tripo 报错）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "geometryQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed"
+     ],
+     "default": "standard",
+     "description": "几何质量。standard=标准；detailed=超清(Ultra)，面数上限更高（见 faceLimit 说明）。仅本 H≥v3 SKU 生效。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。开启后 faceLimit 上限 15 万；未设 faceLimit 时默认约 1 万面；输出强制 FBX。与 generate_parts 等互斥规则见官方文档。"
+    },
+    {
+     "key": "smartLowPoly",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成手工风格、干净拓扑的低面数模型。默认 false。开启后面数与版本无关：三角 500–20,000，四边 500–10,000；与 generate_parts 互斥时本项优先。"
+    },
+    {
+     "key": "generateParts",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否生成可编辑的分割部件。默认 false。【生效条件】仅 model≥v3.0；且必须 texture=false、pbr=false、quad=false（三者任一为 true 则不兼容）。P 系列无此参数。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680751"
+  },
+  {
+   "endpoint": "tripo-p/image-to-3d-P1",
+   "title": "tripo/图生3D-P-P1",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo P 系列单图生成低面数干净拓扑 3D。输入为图片公网 URL。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图公网直链 URL（不支持 file_token）。主体清晰、遮挡少；PNG/JPEG/WebP，≤20MB，建议 ≥256×256，背景干净。Gaussian Splat：单张图生成 .splat，约固定 30 积分。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "enableImageAutofix",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在生成前自动优化低分辨率/低质量输入图以改善 3D 效果。默认 false。图生/多视图可用。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。本 SKU（P1）范围 50–20,000；省略则自适应拓扑。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680752"
+  },
+  {
+   "endpoint": "tripo-p/image-to-3d-P2",
+   "title": "tripo/图生3D-P-P2",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo P 系列单图生成低面数干净拓扑 3D。输入为图片公网 URL。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图公网直链 URL（不支持 file_token）。主体清晰、遮挡少；PNG/JPEG/WebP，≤20MB，建议 ≥256×256，背景干净。Gaussian Splat：单张图生成 .splat，约固定 30 积分。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "enableImageAutofix",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在生成前自动优化低分辨率/低质量输入图以改善 3D 效果。默认 false。图生/多视图可用。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。本 SKU（P2）：三角面 48–50,000；开启 quad 时收窄为 48–25,000（与官方一致）。省略则自适应拓扑。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格。仅 P2 支持；默认 false。开启后 faceLimit 必须在 48–25,000（三角面上限仍为 50,000）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P2）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680753"
+  },
+  {
+   "endpoint": "tripo-p/multiview-to-3d-P1",
+   "title": "tripo/多视图生3D-P-P1",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo P 系列多视图生 3D。view-key 或复用多视图 task_id（互斥）。",
+   "params": [
+    {
+     "key": "inputMode",
+     "type": "LIST",
+     "options": [
+      "views",
+      "multiviewTaskId"
+     ],
+     "default": "views",
+     "description": "多视图输入方式：views=上传前/左/后/右（view-key，正面必填且至少再有一视角）；multiviewTaskId=复用 generate_multiview_image / edit_multiview_image 成功任务。二者互斥，不可与 view-key 混用。",
+     "required": true
+    },
+    {
+     "key": "frontImageUrl",
+     "type": "STRING",
+     "description": "正面图公网 URL。inputMode=views 时必填；支持 PNG/JPEG/WebP，≤20MB。服务端规范视角顺序为 正/左/背/右。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "leftImageUrl",
+     "type": "STRING",
+     "description": "左侧图公网 URL（可选）。inputMode=views；与其它视角组成多视图（至少 2 张含正面）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "backImageUrl",
+     "type": "STRING",
+     "description": "背面图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "rightImageUrl",
+     "type": "STRING",
+     "description": "右侧图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "multiviewTaskId",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "复用此前 generate_multiview_image / edit_multiview_image 且 status=success 的 task_id。与 views 图片输入互斥；仅单元素 task_id，不可混用 view-key。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。本 SKU（P1）范围 50–20,000；省略则自适应拓扑。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680754"
+  },
+  {
+   "endpoint": "tripo-p/multiview-to-3d-P2",
+   "title": "tripo/多视图生3D-P-P2",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo P 系列多视图生 3D。view-key 或复用多视图 task_id（互斥）。",
+   "params": [
+    {
+     "key": "inputMode",
+     "type": "LIST",
+     "options": [
+      "views",
+      "multiviewTaskId"
+     ],
+     "default": "views",
+     "description": "多视图输入方式：views=上传前/左/后/右（view-key，正面必填且至少再有一视角）；multiviewTaskId=复用 generate_multiview_image / edit_multiview_image 成功任务。二者互斥，不可与 view-key 混用。",
+     "required": true
+    },
+    {
+     "key": "frontImageUrl",
+     "type": "STRING",
+     "description": "正面图公网 URL。inputMode=views 时必填；支持 PNG/JPEG/WebP，≤20MB。服务端规范视角顺序为 正/左/背/右。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "leftImageUrl",
+     "type": "STRING",
+     "description": "左侧图公网 URL（可选）。inputMode=views；与其它视角组成多视图（至少 2 张含正面）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "backImageUrl",
+     "type": "STRING",
+     "description": "背面图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "rightImageUrl",
+     "type": "STRING",
+     "description": "右侧图公网 URL（可选）。inputMode=views。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "multiviewTaskId",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "复用此前 generate_multiview_image / edit_multiview_image 且 status=success 的 task_id。与 views 图片输入互斥；仅单元素 task_id，不可混用 view-key。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "orientation",
+     "type": "LIST",
+     "options": [
+      "default",
+      "align_image"
+     ],
+     "default": "default",
+     "description": "模型朝向。default=自动；align_image=与输入图视角对齐。【生效条件】仅当 texture=true（生效贴图）时有效；未开贴图时此参数无效。图生/多视图。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。本 SKU（P2）：三角面 48–50,000；开启 quad 时收窄为 48–25,000（与官方一致）。省略则自适应拓扑。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格。仅 P2 支持；默认 false。开启后 faceLimit 必须在 48–25,000（三角面上限仍为 50,000）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P2）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680755"
+  },
+  {
+   "endpoint": "tripo-p/text-to-3d-P1",
+   "title": "tripo/文生3D-P-P1",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo P 系列文本生成低面数干净拓扑 3D（P1），面数 50–20000，适合游戏/Web 资产。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本提示词，最多 1024 字符。请描述外形、材质、风格与尺度。好例：带铁铰链与锈锁的低模中世纪木宝箱；差例：一个盒子。加入材质/风格描述有助于 PBR 效果。",
+     "required": true
+    },
+    {
+     "key": "negativePrompt",
+     "type": "STRING",
+     "maxLength": 255,
+     "description": "反向提示词，最多 255 字符。描述不希望出现在模型中的内容，如：模糊、低质量、破损网格。"
+    },
+    {
+     "key": "imageSeed",
+     "type": "NUMBER",
+     "description": "内部文生图阶段随机种子。控制由文本生成的参考图；相同种子+相同输入可复现。不填则每次随机。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。本 SKU（P1）范围 50–20,000；省略则自适应拓扑。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680756"
+  },
+  {
+   "endpoint": "tripo-p/text-to-3d-P2",
+   "title": "tripo/文生3D-P-P2",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "Tripo P 系列文本生成低面数干净拓扑 3D（P2），面数 50–20000，适合游戏/Web 资产。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本提示词，最多 1024 字符。请描述外形、材质、风格与尺度。好例：带铁铰链与锈锁的低模中世纪木宝箱；差例：一个盒子。加入材质/风格描述有助于 PBR 效果。",
+     "required": true
+    },
+    {
+     "key": "negativePrompt",
+     "type": "STRING",
+     "maxLength": 255,
+     "description": "反向提示词，最多 255 字符。描述不希望出现在模型中的内容，如：模糊、低质量、破损网格。"
+    },
+    {
+     "key": "imageSeed",
+     "type": "NUMBER",
+     "description": "内部文生图阶段随机种子。控制由文本生成的参考图；相同种子+相同输入可复现。不填则每次随机。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。本 SKU（P2）：三角面 48–50,000；开启 quad 时收窄为 48–25,000（与官方一致）。省略则自适应拓扑。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格。仅 P2 支持；默认 false。开启后 faceLimit 必须在 48–25,000（三角面上限仍为 50,000）。"
+    },
+    {
+     "key": "texture",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成贴图。false=仅白模无贴图；默认 true。注意：pbr=true 时会强制 texture=true。与 generate_parts 互斥：分部件时必须 texture=false。orientation 仅在 texture=true 时生效。"
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "autoSize",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否自动缩放到真实世界尺寸（单位：米），便于 AR/VR 或游戏引擎。默认 false。【生效条件】H 系列仅 model≥v3.0；P 系列可传。不影响积分。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    },
+    {
+     "key": "exportUv",
+     "type": "BOOL",
+     "default": true,
+     "description": "生成时是否做 UV 展开。默认 true。设 false 可加快生成并减小体积，UV 可在贴图阶段再处理。"
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680757"
+  },
+  {
+   "endpoint": "tripo/convert",
+   "title": "tripo/格式转换",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "模型格式转换。input 为模型公网 URL 或 Tripo task_id。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    },
+    {
+     "key": "format",
+     "type": "LIST",
+     "options": [
+      "GLTF",
+      "FBX",
+      "USDZ",
+      "OBJ",
+      "STL",
+      "3MF"
+     ],
+     "default": "GLTF",
+     "description": "目标导出格式。GLTF=Web/WebGL；FBX=Unreal/Unity/DCC；USDZ=Apple AR；OBJ=传统交换无动画；STL/3MF=打印向（几何为主）。",
+     "required": true
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。未设 face_limit 时默认约 1万面；开启后强制输出格式为 FBX。【生效条件】仅 model≥v3.0；与 generate_parts 互斥（分部件时必须 quad=false）。P 系列无此参数。"
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "输出网格最大面数。省略则自适应拓扑。建议：游戏资源 5万–10万；Web/移动 1万–5万。上限（三角）：v3.1 Standard 150万 / Ultra 200万；v3.0 Standard 100万 / Ultra 200万；v2.5 Standard 50万。四边面(quad=true)上限约 15万；未设 face_limit 时默认约 1万面。smart_low_poly=true 时：三角 500–2万，四边面 500–1万（与模型版本无关）。P1：建议 50–20000。"
+    },
+    {
+     "key": "flattenBottom",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否展平模型底部。默认 false。属于转换高级参数，可能产生额外积分。"
+    },
+    {
+     "key": "flattenBottomThreshold",
+     "type": "NUMBER",
+     "default": 0.01,
+     "description": "底部展平深度阈值。默认 0.01。"
+    },
+    {
+     "key": "scaleFactor",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "导出模型缩放系数。默认 1。"
+    },
+    {
+     "key": "exportVertexColors",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否导出顶点色。仅 OBJ / GLTF 有效。默认 false。"
+    },
+    {
+     "key": "forceSymmetry",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否强制对称。仅当 quad=true 时有效。默认 false。"
+    },
+    {
+     "key": "textureSize",
+     "type": "NUMBER",
+     "default": 4096,
+     "description": "漫反射贴图像素边长，默认 4096。"
+    },
+    {
+     "key": "textureFormat",
+     "type": "LIST",
+     "options": [
+      "JPEG",
+      "PNG",
+      "WEBP"
+     ],
+     "default": "JPEG",
+     "description": "贴图图像格式。JPEG=默认最小体积；PNG=无损可透明；WEBP=现代 Web；另有 BMP/TIFF 等专业格式。",
+     "required": true
+    },
+    {
+     "key": "bake",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否将高级材质效果烘焙进基础贴图以提升兼容性。默认 true。重拓扑 v2.0 支持；v1.0 不支持 bake。"
+    },
+    {
+     "key": "packUv",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否将所有 UV 打包到统一布局。默认 false。"
+    },
+    {
+     "key": "pivotToCenterBottom",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否将轴心移到底部中心。默认 false。属于转换高级参数，可能产生额外积分。"
+    },
+    {
+     "key": "fbxPreset",
+     "type": "LIST",
+     "options": [
+      "blender",
+      "3dsmax",
+      "mixamo",
+      "bake_scale"
+     ],
+     "default": "blender",
+     "description": "FBX 兼容预设。blender / 3dsmax / mixamo（适配 Mixamo 绑定）。"
+    },
+    {
+     "key": "withAnimation",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否包含骨骼与动画数据。默认 true。"
+    },
+    {
+     "key": "animateInPlace",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否原地动画（无根位移）。默认 false。"
+    },
+    {
+     "key": "partNames",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "部件名列表（CSV）。来自网格分割结果；省略则处理全部部件。用于贴图 / 补全 / 转换 / 重拓扑等。"
+    },
+    {
+     "key": "exportOrientation",
+     "type": "LIST",
+     "options": [
+      "+x",
+      "-x",
+      "-y",
+      "+y"
+     ],
+     "default": "+x",
+     "description": "导出朝向（前向轴）。仅作用于本次生成；若后续还要贴图/绑定/转换等后处理，建议不传，改在 convert 最后一步设置。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680758"
+  },
+  {
+   "endpoint": "tripo/image-to-splat",
+   "title": "tripo/图片生成GaussianSplat",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "单张图片公网 URL 生成 .splat Gaussian Splat；固定约 30 积分，约 4 分钟。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "输入图公网直链 URL（不支持 file_token）。主体清晰、遮挡少；PNG/JPEG/WebP，≤20MB，建议 ≥256×256，背景干净。Gaussian Splat：单张图生成 .splat，约固定 30 积分。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP.",
+     "required": true
+    },
+    {
+     "key": "modelSeed",
+     "type": "NUMBER",
+     "description": "几何生成随机种子。相同种子与相同输入可复现相同网格；不填则每次随机。若只想换贴图保留几何：固定 modelSeed，改 textureSeed。Splat 任务亦可用。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680759"
+  },
+  {
+   "endpoint": "tripo/mesh-complete",
+   "title": "tripo/网格补全",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "对网格分割结果做部件补全。input 必须是 mesh/segment 返回的 task_id（以 task_ 开头）。",
+   "params": [
+    {
+     "key": "tripoSegmentTaskId",
+     "type": "STRING",
+     "maxLength": 128,
+     "description": "必填：此前 mesh/segment（网格分割）任务的 task_id，必须以 task_ 开头。不要传模型下载 URL；补全接口只接受分割任务 ID。",
+     "required": true
+    },
+    {
+     "key": "partNames",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "部件名列表（CSV）。来自网格分割结果；省略则处理全部部件。用于贴图 / 补全 / 转换 / 重拓扑等。"
+    },
+    {
+     "key": "completionMode",
+     "type": "LIST",
+     "options": [
+      "ai_completion",
+      "quick_cap"
+     ],
+     "default": "ai_completion",
+     "description": "补全模式。ai_completion=AI 扩散补全缺失区域（默认，额外积分）；quick_cap=快速封洞，不走 AI 生成。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680760"
+  },
+  {
+   "endpoint": "tripo/mesh-segment-v1.0",
+   "title": "tripo/网格分割-v1.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "对已有 3D 模型做几何/语义分割。input 为模型公网 URL 或 Tripo 生成 task_id。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680761"
+  },
+  {
+   "endpoint": "tripo/mesh-segment-v2.0",
+   "title": "tripo/网格分割-v2.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "对已有 3D 模型做几何/语义分割。input 为模型公网 URL 或 Tripo 生成 task_id。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    },
+    {
+     "key": "segmentationGranularity",
+     "type": "LIST",
+     "options": [
+      "simple",
+      "balanced",
+      "detailed"
+     ],
+     "default": "balanced",
+     "description": "分割粒度（仅分割模型 v2）。simple / balanced（默认）/ detailed。若提供 ref_image，本字段与 split_by_connectivity 将被忽略。"
+    },
+    {
+     "key": "splitByConnectivity",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否按连通域拆分（仅分割模型 v2）。默认 true。提供 ref_image 时忽略。"
+    },
+    {
+     "key": "refImageUrl",
+     "type": "STRING",
+     "description": "语义参考 / mask 图公网 URL（分割 v2）。提供后将忽略 granularity 与 split_by_connectivity。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680762"
+  },
+  {
+   "endpoint": "tripo/mesh-smartsegment",
+   "title": "tripo/智能分割",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "端到端智能分割。segType=image 传图片 URL；segType=model 传 GLB 公网直链 + transform。",
+   "params": [
+    {
+     "key": "segType",
+     "type": "LIST",
+     "options": [
+      "image",
+      "model"
+     ],
+     "default": "image",
+     "description": "分割类型（必填）。image=图片 pipeline（PNG/JPEG/WebP）；model=模型 pipeline（仅 GLB，且须传 transform）。",
+     "required": true
+    },
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "segType=image 时必填。输入图公网直链 URL（不支持 file_token）。PNG/JPEG/WebP。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "segType=model 时必填。公网可访问的 **GLB** 直链（文档仅支持 GLB，不支持其它格式/task_id/file_token）。"
+    },
+    {
+     "key": "transform",
+     "type": "STRING",
+     "maxLength": 512,
+     "description": "segType=model 时必填。列主序 4×4 变换矩阵，共 16 个 float，用逗号分隔的字符串。须按实际位姿传入，无业务默认值。单位矩阵示例（仅作格式参考）：1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1"
+    },
+    {
+     "key": "granularity",
+     "type": "LIST",
+     "options": [
+      "coarse",
+      "medium",
+      "fine"
+     ],
+     "default": "medium",
+     "description": "分割粒度：coarse / medium（默认）/ fine。"
+    },
+    {
+     "key": "hint",
+     "type": "STRING",
+     "maxLength": 512,
+     "description": "可选提示词，辅助识别需要分割的部件。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680763"
+  },
+  {
+   "endpoint": "tripo/retopology-v1.0",
+   "title": "tripo/重拓扑-v1.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "减面/重拓扑。input 为模型公网 URL 或 Tripo task_id。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "目标面数（整数）。v1.0 基础减面时必填；具体上下限以 Tripo 文档/返回为准。",
+     "required": true
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。未设 face_limit 时默认约 1万面；开启后强制输出格式为 FBX。【生效条件】仅 model≥v3.0；与 generate_parts 互斥（分部件时必须 quad=false）。P 系列无此参数。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680764"
+  },
+  {
+   "endpoint": "tripo/retopology-v2.0",
+   "title": "tripo/重拓扑-v2.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "减面/重拓扑。input 为模型公网 URL 或 Tripo task_id。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    },
+    {
+     "key": "faceLimit",
+     "type": "NUMBER",
+     "description": "目标面数（整数）。不填则由三方自适应；具体上下限以 Tripo 文档/返回为准。"
+    },
+    {
+     "key": "quad",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否输出四边面网格（否则为三角面）。默认 false。未设 face_limit 时默认约 1万面；开启后强制输出格式为 FBX。【生效条件】仅 model≥v3.0；与 generate_parts 互斥（分部件时必须 quad=false）。P 系列无此参数。"
+    },
+    {
+     "key": "bake",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否将高级材质效果烘焙进基础贴图以提升兼容性。默认 true。重拓扑 v2.0 支持；v1.0 不支持 bake。"
+    },
+    {
+     "key": "partNames",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "部件名列表（CSV）。来自网格分割结果；省略则处理全部部件。用于贴图 / 补全 / 转换 / 重拓扑等。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680765"
+  },
+  {
+   "endpoint": "tripo/texture-v2.5",
+   "title": "tripo/模型贴图-v2.5",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "为已有模型重新贴图/PBR。input 为模型公网 URL 或 Tripo 生成 task_id；texture_prompt 支持 text/image/images 互斥。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    },
+    {
+     "key": "texturePromptMode",
+     "type": "LIST",
+     "options": [
+      "text",
+      "image",
+      "images"
+     ],
+     "default": "text",
+     "description": "贴图引导模式（互斥）：text=文本(+可选风格图)；image=单张参考图；images=前左后右四视图参考。基于已有 task_id 贴图时，强烈建议重新提供参考图。",
+     "required": true
+    },
+    {
+     "key": "texturePromptText",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本贴图提示（mode=text），描述期望材质/风格，如 worn leather with scratches。"
+    },
+    {
+     "key": "styleImageUrl",
+     "type": "STRING",
+     "description": "风格参考图公网 URL，仅可与 text 模式搭配，影响艺术风格；建议 ≥256×256。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureImageUrl",
+     "type": "STRING",
+     "description": "单张贴图参考图公网 URL（mode=image）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureFrontImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-正面（mode=images，四张都要，顺序：前、左、后、右）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureLeftImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-左侧（mode=images）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureBackImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-背面（mode=images）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureRightImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-右侧（mode=images）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "bake",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否将高级材质效果烘焙进基础贴图以提升兼容性。默认 true。重拓扑 v2.0 支持；v1.0 不支持 bake。"
+    },
+    {
+     "key": "partNames",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "部件名列表（CSV）。来自网格分割结果；省略则处理全部部件。用于贴图 / 补全 / 转换 / 重拓扑等。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680766"
+  },
+  {
+   "endpoint": "tripo/texture-v3.0",
+   "title": "tripo/模型贴图-v3.0",
+   "task": "other",
+   "outputType": "other",
+   "category": "其他",
+   "vendor": "",
+   "description": "为已有模型重新贴图/PBR。input 为模型公网 URL 或 Tripo 生成 task_id；texture_prompt 支持 text/image/images 互斥。",
+   "params": [
+    {
+     "key": "modelUrl",
+     "type": "STRING",
+     "maxLength": 2048,
+     "description": "模型来源：公网模型直链（GLB/GLTF/FBX/OBJ/STL，≤150MB），或此前 text/image/multiview_to_model 的 task_id（task_ 开头）。三选一语义，勿混用 file_token。",
+     "required": true
+    },
+    {
+     "key": "texturePromptMode",
+     "type": "LIST",
+     "options": [
+      "text",
+      "image",
+      "images"
+     ],
+     "default": "text",
+     "description": "贴图引导模式（互斥）：text=文本(+可选风格图)；image=单张参考图；images=前左后右四视图参考。基于已有 task_id 贴图时，强烈建议重新提供参考图。",
+     "required": true
+    },
+    {
+     "key": "texturePromptText",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "文本贴图提示（mode=text），描述期望材质/风格，如 worn leather with scratches。"
+    },
+    {
+     "key": "styleImageUrl",
+     "type": "STRING",
+     "description": "风格参考图公网 URL，仅可与 text 模式搭配，影响艺术风格；建议 ≥256×256。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureImageUrl",
+     "type": "STRING",
+     "description": "单张贴图参考图公网 URL（mode=image）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureFrontImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-正面（mode=images，四张都要，顺序：前、左、后、右）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureLeftImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-左侧（mode=images）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureBackImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-背面（mode=images）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "textureRightImageUrl",
+     "type": "STRING",
+     "description": "四视图贴图-右侧（mode=images）。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP."
+    },
+    {
+     "key": "pbr",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成 PBR 材质贴图（base_color / metallic / roughness / normal）。默认 true。设为 true 时会自动强制 texture=true。与 generate_parts 互斥：分部件时必须 pbr=false。"
+    },
+    {
+     "key": "textureQuality",
+     "type": "LIST",
+     "options": [
+      "standard",
+      "detailed",
+      "extreme"
+     ],
+     "default": "standard",
+     "description": "贴图质量。standard=均衡；detailed=更高精度更慢；extreme=8K 最高精度（比 detailed 额外积分）。默认 standard。【生效条件】H 系列仅 model≥v3.0 有效；v2.5 传此参数不生效、不计高清/8K 加价。P 系列（P1）可传，计费侧按「有/无贴图」计价（无贴图基价 / 标准贴图）。另需生效贴图：texture=true 或 pbr=true（pbr 会强制 texture）。"
+    },
+    {
+     "key": "textureAlignment",
+     "type": "LIST",
+     "options": [
+      "original_image",
+      "geometry"
+     ],
+     "default": "original_image",
+     "description": "贴图对齐优先级。original_image=优先匹配输入图像素颜色；geometry=优先匹配生成几何。默认 original_image。图生 / 多视图 / P 系列图生可用。"
+    },
+    {
+     "key": "bake",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否将高级材质效果烘焙进基础贴图以提升兼容性。默认 true。重拓扑 v2.0 支持；v1.0 不支持 bake。"
+    },
+    {
+     "key": "partNames",
+     "type": "STRING",
+     "maxLength": 1024,
+     "description": "部件名列表（CSV）。来自网格分割结果；省略则处理全部部件。用于贴图 / 补全 / 转换 / 重拓扑等。"
+    },
+    {
+     "key": "textureSeed",
+     "type": "NUMBER",
+     "description": "贴图生成随机种子。相同种子可复现相同贴图；不填则随机。固定几何换贴图：保持 modelSeed，改动本字段。"
+    },
+    {
+     "key": "compress",
+     "type": "LIST",
+     "options": [
+      "geometry"
+     ],
+     "description": "压缩类型。可选 geometry=meshopt 压缩以减小体积。留空表示不压缩。【生效条件】H 系列文档：仅 model≥v3.0。P 系列亦可传。不影响积分。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-534680767"
   },
   {
    "endpoint": "minimax/hailuo-h3/context-ir-image",
@@ -16280,6 +19444,96 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-465292107"
   },
   {
+   "endpoint": "dola-Seedream-5.5/text-to-image",
+   "title": "Dola-Seedream-5.5-文生图",
+   "task": "text-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "Dola",
+   "description": "Seedream 5.5 文生图只提交提示词生成单张图片。分辨率支持 1K、1.5K、2K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 5000,
+     "description": "用于生成图片的提示词",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "宽，240 到 11520。与 height 相乘须在 921600 到 8294400，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "高，240 到 11520。与 width 相乘须在 921600 到 8294400，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1K",
+      "1.5K",
+      "2K"
+     ],
+     "default": "2K",
+     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K，默认 2K。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "png",
+      "jpeg"
+     ],
+     "default": "png",
+     "description": "输出图片格式，png 或 jpeg，默认 png。"
+    },
+    {
+     "key": "watermark",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否添加水印。true 或 false，默认 false。不选也按 false 提交。"
+    },
+    {
+     "key": "background",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "transparent",
+      "opaque"
+     ],
+     "default": "auto",
+     "description": "背景。auto 由模型根据提示词和输出格式决定。outputFormat 为 jpeg 时 auto 输出不透明图，transparent 与 jpeg 不能同时使用。opaque 为不透明底。默认 auto。"
+    },
+    {
+     "key": "optimizePromptMode",
+     "type": "LIST",
+     "options": [
+      "standard"
+     ],
+     "default": "standard",
+     "description": "提示词优化。只支持 standard。不选也按 standard 提交。传入 fast 上游报错。"
+    },
+    {
+     "key": "safetyIdentifier",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 64,
+     "description": "终端用户的固定英文标识，最长 64。建议传哈希，例如 sha256_user_abc123。留空不传给上游。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-535396529"
+  },
+  {
    "endpoint": "rhart-image-g-1.5-official/text-to-image",
    "title": "全能图片G-1.5-文生图-官方稳定版",
    "task": "text-to-image",
@@ -18175,6 +21429,96 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-494858272"
+  },
+  {
+   "endpoint": "seedream-v5.5/text-to-image",
+   "title": "seedream-v5.5-文生图",
+   "task": "text-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "seedream",
+   "description": "Seedream 5.5 文生图只提交提示词生成单张图片。分辨率支持 1K、1.5K、2K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 5,
+     "maxLength": 5000,
+     "description": "用于生成图片的提示词",
+     "required": true
+    },
+    {
+     "key": "width",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "宽，240 到 8595。与 height 相乘须在 921600 到 4624220，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "height",
+     "type": "NUMBER",
+     "default": 1024,
+     "description": "高，240 到 8595。与 width 相乘须在 921600 到 4624220，宽高比须在 1/16 到 16。传了 resolution 时不用宽高。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1K",
+      "1.5K",
+      "2K"
+     ],
+     "default": "2K",
+     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K，默认 2K。"
+    },
+    {
+     "key": "outputFormat",
+     "type": "LIST",
+     "options": [
+      "png",
+      "jpeg"
+     ],
+     "default": "png",
+     "description": "输出图片格式，png 或 jpeg，默认 png。"
+    },
+    {
+     "key": "watermark",
+     "type": "LIST",
+     "options": [
+      "false",
+      "true"
+     ],
+     "default": "false",
+     "description": "是否添加水印。true 或 false，默认 false。不选也按 false 提交。"
+    },
+    {
+     "key": "background",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "transparent",
+      "opaque"
+     ],
+     "default": "auto",
+     "description": "背景。auto 由模型根据提示词和输出格式决定。outputFormat 为 jpeg 时 auto 输出不透明图，transparent 与 jpeg 不能同时使用。opaque 为不透明底。默认 auto。"
+    },
+    {
+     "key": "optimizePromptMode",
+     "type": "LIST",
+     "options": [
+      "standard"
+     ],
+     "default": "standard",
+     "description": "提示词优化。只支持 standard。不选也按 standard 提交。传入 fast 上游报错。"
+    },
+    {
+     "key": "safetyIdentifier",
+     "type": "STRING",
+     "minLength": 0,
+     "maxLength": 64,
+     "description": "终端用户的固定英文标识，最长 64。建议传哈希，例如 sha256_user_abc123。留空不传给上游。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-535396528"
   },
   {
    "endpoint": "youchuan/text-to-image-niji6",
