@@ -1,9 +1,308 @@
 {
  "version": 2,
- "builtAt": "2026-11-15T11:14:48+00:00",
+ "builtAt": "2026-11-28T12:00:21+00:00",
  "source": "https://www.runninghub.cn/runninghub-api-doc-cn/llms.txt",
- "total": 424,
+ "total": 432,
  "endpoints": [
+  {
+   "endpoint": "alibaba/qwen-audio-3.1-tts-flash",
+   "title": "千问音频3.1-语音合成-Flash",
+   "task": "audio-to-audio",
+   "outputType": "audio",
+   "category": "音频生成与处理",
+   "vendor": "",
+   "description": "千问音频 3.1 TTS Flash 面向语音助手、客服和实时对话，一次提交整段文本就返回可播放音频。它能按指令调整情绪、方言和角色，也支持 SSML、公式和文本内情感标签。音色列表提供 69 个系统音色，包括精品中文和其他系统音色。按输入和输出 Token 计费。",
+   "params": [
+    {
+     "key": "text",
+     "type": "STRING",
+     "maxLength": 20000,
+     "description": "要合成的文本，单次最长 20000 字符。可写 SSML（需同时打开 enableSsml）或 LaTeX。也可在文本中使用 [excited]、[laughing] 等情感标签。按输入和输出 Token 计费。",
+     "required": true
+    },
+    {
+     "key": "voice",
+     "type": "LIST",
+     "options": [
+      "yuxiaoyun_v3.1",
+      "qiaoxiaojiao_v3.1",
+      "xiaxiaochen_v3.1",
+      "anmingyuan_v3.1",
+      "wenhuaiqing_v3.1",
+      "anxiaolan_v3.1",
+      "xieshurou_v3.1",
+      "baiqinglan_v3.1",
+      "xuyuyuan_v3.1",
+      "anruorou_v3.1",
+      "wenhuaizhi_v3.1",
+      "xiaoxingzhi_v3.1",
+      "guyunshu_v3.1",
+      "huozhuoshi_v3.1",
+      "yeqinghe_v3.1",
+      "yunhuanhuan_v3.1",
+      "xuxiaoqiao_v3.1",
+      "baianran_v3.1",
+      "xuyanchu_v3.1",
+      "yezhiqing_v3.1",
+      "andi_v3.1",
+      "anyuqing_v3.1",
+      "linxiaoling_v3.1",
+      "longfeifei_v3.1",
+      "longjing_v3.1",
+      "longqiang_v3.1",
+      "longyan_v3.1",
+      "longxiaobai_v3.1",
+      "longyue_v3.1",
+      "longcheng_v3.1",
+      "longlaotie_v3.1",
+      "longshao_v3.1",
+      "longshu_v3.1",
+      "longze_v3.1",
+      "longhao_v3.1",
+      "longjin_v3.1",
+      "longnan_v3.1",
+      "longshuo_v3.1",
+      "longtian_v3.1",
+      "longxiaocheng_v3.1",
+      "longke_v3.1",
+      "loongbella_v3.1",
+      "longanyuanfei_v3.1",
+      "longjielidou_v3.1",
+      "longanlingxi_v3.1",
+      "longhuohuo_v3.1",
+      "longyingtao_v3.1",
+      "longanya_v3.1",
+      "longwan_v3.1",
+      "longxing_v3.1",
+      "longhua_v3.1",
+      "longhan_v3.1",
+      "longanzhi_v3.1",
+      "longzhe_v3.1",
+      "longanyang_v3.1",
+      "libai_v3.1",
+      "longling_v3.1",
+      "longniuniu_v3.1",
+      "longshanshan_v3.1",
+      "longpaopao_v3.1",
+      "loongstella_v3.1",
+      "longyuan_v3.1",
+      "longmiao_v3.1",
+      "longsanshu_v3.1",
+      "longanli_v3.1",
+      "longanwen_v3.1",
+      "longanlang_v3.1",
+      "longxiaoxia_v3.1",
+      "longanchong_v3.1"
+     ],
+     "default": "yuxiaoyun_v3.1",
+     "description": "系统音色，共 69 个精品中文和其他系统音色。复刻或设计音色 ID 不在此列表中。",
+     "required": true
+    },
+    {
+     "key": "instruction",
+     "type": "STRING",
+     "maxLength": 500,
+     "description": "自然语言指令，控制语种、方言、情绪或角色。指令语种需与待合成文本一致。例如：请讲上海话。"
+    },
+    {
+     "key": "languageHint",
+     "type": "LIST",
+     "options": [
+      "zh",
+      "en"
+     ],
+     "description": "目标语种，只传一个值，用于纠正数字、缩写或符号的读音。列表里的音色以中文为主，Bella 等少数音色支持英文，所以只提供中文和英文。不传则由模型自行判断。"
+    },
+    {
+     "key": "format",
+     "type": "LIST",
+     "options": [
+      "mp3",
+      "wav",
+      "pcm",
+      "opus"
+     ],
+     "default": "mp3",
+     "description": "音频编码格式，默认 mp3。"
+    },
+    {
+     "key": "sampleRate",
+     "type": "LIST",
+     "options": [
+      "8000",
+      "12000",
+      "16000",
+      "22050",
+      "24000",
+      "44100",
+      "48000"
+     ],
+     "default": "22050",
+     "description": "采样率（Hz），默认 22050。format 为 opus 时不要选 22050 或 44100。"
+    },
+    {
+     "key": "volume",
+     "type": "NUMBER",
+     "default": 50,
+     "description": "音量，0 到 100，默认 50。"
+    },
+    {
+     "key": "rate",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "语速，0.5 到 2.0，默认 1.0。"
+    },
+    {
+     "key": "pitch",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "音调，0.5 到 2.0，默认 1.0。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "default": 0,
+     "description": "随机种子，0 到 65535，默认 0。相同文本、音色和参数下可复现结果。"
+    },
+    {
+     "key": "enableSsml",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否按 SSML 解析文本。打开后 text 需要写成 SSML。"
+    },
+    {
+     "key": "enableAigcTag",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在 wav、mp3、opus 音频里写入 AIGC 隐性标识。默认关闭。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-539710092"
+  },
+  {
+   "endpoint": "alibaba/qwen-audio-3.1-tts-plus",
+   "title": "千问音频3.1-语音合成-Plus",
+   "task": "audio-to-audio",
+   "outputType": "audio",
+   "category": "音频生成与处理",
+   "vendor": "",
+   "description": "千问音频 3.1 TTS Plus 面向品牌音色、有声内容和影视配音，强调音质与表现力。一次调用返回完整音频，可用自然语言指令控制情绪、语气和方言，并支持 SSML 与公式朗读。按合成字符计费。",
+   "params": [
+    {
+     "key": "text",
+     "type": "STRING",
+     "maxLength": 20000,
+     "description": "要合成的文本，单次最长 20000 字符。可写 SSML（需同时打开 enableSsml）或 LaTeX。也可在文本中使用 [excited]、[laughing] 等情感标签。按三方返回的计费字符数收费。",
+     "required": true
+    },
+    {
+     "key": "voice",
+     "type": "LIST",
+     "options": [
+      "longanhuan_v3.1",
+      "longanlingxin_v3.1",
+      "longanfengyue_v3.1",
+      "xunanchuan_v3.1"
+     ],
+     "default": "longanhuan_v3.1",
+     "description": "Plus 已公布的四个旗舰系统音色。复刻或设计音色 ID 不在此列表中。",
+     "required": true
+    },
+    {
+     "key": "instruction",
+     "type": "STRING",
+     "maxLength": 500,
+     "description": "自然语言指令，控制语种、方言、情绪或角色。指令语种需与待合成文本一致。例如：请讲上海话。"
+    },
+    {
+     "key": "languageHint",
+     "type": "LIST",
+     "options": [
+      "zh",
+      "en",
+      "fr",
+      "de",
+      "ja",
+      "ko",
+      "ru",
+      "pt",
+      "th",
+      "id",
+      "vi",
+      "es",
+      "it",
+      "ms",
+      "fil",
+      "ar"
+     ],
+     "description": "目标语种。只传一个值，用于纠正数字、缩写、符号或小语种读音。不传则由模型自行判断。"
+    },
+    {
+     "key": "format",
+     "type": "LIST",
+     "options": [
+      "mp3",
+      "wav",
+      "pcm",
+      "opus"
+     ],
+     "default": "mp3",
+     "description": "音频编码格式，默认 mp3。"
+    },
+    {
+     "key": "sampleRate",
+     "type": "LIST",
+     "options": [
+      "8000",
+      "12000",
+      "16000",
+      "22050",
+      "24000",
+      "44100",
+      "48000"
+     ],
+     "default": "22050",
+     "description": "采样率（Hz），默认 22050。format 为 opus 时不要选 22050 或 44100。"
+    },
+    {
+     "key": "volume",
+     "type": "NUMBER",
+     "default": 50,
+     "description": "音量，0 到 100，默认 50。"
+    },
+    {
+     "key": "rate",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "语速，0.5 到 2.0，默认 1.0。"
+    },
+    {
+     "key": "pitch",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "音调，0.5 到 2.0，默认 1.0。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "default": 0,
+     "description": "随机种子，0 到 65535，默认 0。相同文本、音色和参数下可复现结果。"
+    },
+    {
+     "key": "enableSsml",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否按 SSML 解析文本。打开后 text 需要写成 SSML。"
+    },
+    {
+     "key": "enableAigcTag",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在 wav、mp3、opus 音频里写入 AIGC 隐性标识。默认关闭。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-539710091"
+  },
   {
    "endpoint": "mureka-ai/mureka-v7.6/extend-song",
    "title": "mureka-v7.6 短歌延长",
@@ -751,7 +1050,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 0,
-     "maxLength": 2000,
      "description": "可选：描述要拆分的元素；不传则自动识别全部主要元素"
     },
     {
@@ -3761,7 +4059,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 5,
-     "maxLength": 5000,
      "description": "prompt",
      "required": true
     },
@@ -3814,13 +4111,12 @@
    "outputType": "image",
    "category": "图像生成与处理",
    "vendor": "seedream",
-   "description": "Seedream 5.5 图生图支持最多 10 张参考图，不要求输入图带透明通道。分辨率支持 1K、1.5K、2K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
+   "description": "Seedream 5.5 图生图支持最多 10 张参考图，不要求输入图带透明通道。分辨率支持 1K、1.5K、2K、3K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
    "params": [
     {
      "key": "prompt",
      "type": "STRING",
      "minLength": 5,
-     "maxLength": 5000,
      "description": "编辑或融合指令",
      "required": true
     },
@@ -3849,10 +4145,11 @@
      "options": [
       "1K",
       "1.5K",
-      "2K"
+      "2K",
+      "3K"
      ],
      "default": "2K",
-     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K，默认 2K。"
+     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K、3K，默认 2K。"
     },
     {
      "key": "outputFormat",
@@ -5356,12 +5653,13 @@
       "480p",
       "720p",
       "native1080p",
+      "native4k",
       "1080p",
       "2k",
       "4k"
      ],
      "default": "720p",
-     "description": "视频分辨率。分为模型原生输出的分辨率（480p、720p、native1080p），与基于 720p 原生生成后进行超分放大的分辨率（1080p、2k、4k）。",
+     "description": "视频分辨率。分为模型原生输出的分辨率（480p、720p、native1080p、native4k），与基于 720p 原生生成后进行超分放大的分辨率（1080p、2k、4k）。",
      "required": true
     },
     {
@@ -9010,6 +9308,75 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183095"
   },
   {
+   "endpoint": "sand-ai/magi-2/image-to-video",
+   "title": "MAGI-2 图生视频",
+   "task": "image-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "MAGI",
+   "description": "MAGI-2 图生视频用一张首帧图，或再加一张尾帧图，生成带声音的 1080p 视频。可以补一句提示词说明动作和镜头，也可以只靠画面让静帧自己动起来。时长从 4 秒到 30 秒按秒选择，画幅支持 21:9、16:9、4:3、1:1、3:4 和 9:16。音效包含在按时长计费里。它适合产品动效、角色微动，以及首帧走到尾帧的过渡镜头。",
+   "params": [
+    {
+     "key": "imageUrl",
+     "type": "STRING",
+     "description": "首帧图片。公网 HTTPS 地址，单张不超过 30MB，支持 JPG、JPEG、PNG、WEBP、GIF、BMP、TIFF、HEIC、HEIF。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP, GIF, BMP, TIFF, HEIC, HEIF.",
+     "required": true
+    },
+    {
+     "key": "endImageUrl",
+     "type": "STRING",
+     "description": "尾帧图片，可选。规格与首帧相同。填写后视频会向这张图收束。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP, GIF, BMP, TIFF, HEIC, HEIF."
+    },
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 15000,
+     "description": "可选的画面或动作描述，1 到 15000 字。留空则只按素材生成。"
+    },
+    {
+     "key": "duration",
+     "type": "NUMBER",
+     "default": 5,
+     "description": "视频时长，4 到 30 秒，默认 5 秒。售价按这个秒数计算。",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "21:9",
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16"
+     ],
+     "description": "画面比例，可选。留空则跟随首帧图片比例。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1080p"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率。目前只有 1080p。"
+    },
+    {
+     "key": "generateAudio",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成音效。默认开启，费用已包含在按时长计费里。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "description": "随机种子，0 到 4294967295 的整数；传 -1 或留空则由上游随机。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-541630252"
+  },
+  {
    "endpoint": "seedance-v1.5-pro/image-to-video",
    "title": "seedance-v1.5-pro-image-to-video",
    "task": "image-to-video",
@@ -10405,7 +10772,7 @@
    "outputType": "image",
    "category": "图像生成与处理",
    "vendor": "",
-   "description": "Seedream 5.5 图层拆分把单张图片拆成 1 张底图和最多 99 个图层，并返回层级、包围盒，以及开启文字识别后的文字内容。最多输出张数可设为 2 到 100，默认 30。分辨率只支持 auto、1K、1.5K、2K。不暴露图层开关，请求固定为图层拆分。不支持背景参数。",
+   "description": "Seedream 5.5 图层拆分把单张图片拆成 1 张底图和最多 99 个图层，并返回层级、包围盒，以及开启文字识别后的文字内容。最多输出张数可设为 2 到 100，默认 30。分辨率只支持 auto、1K、1.5K、2K、3K。不暴露图层开关，请求固定为图层拆分。不支持背景参数。",
    "params": [
     {
      "key": "imageUrl",
@@ -10417,7 +10784,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 0,
-     "maxLength": 2000,
      "description": "可选。描述要拆出的元素；留空则自动识别主要元素"
     },
     {
@@ -10427,10 +10793,11 @@
       "auto",
       "1K",
       "1.5K",
-      "2K"
+      "2K",
+      "3K"
      ],
      "default": "auto",
-     "description": "只支持档位，不支持宽高像素。取值 auto、1K、1.5K、2K，默认 auto。auto 按底图和每个图层各自的原始尺寸处理：在 921600 到 4624220 之间保持原尺寸，小于 1K 抬到 1K，大于 2K 压到 2K，各自宽高比不变。"
+     "description": "只支持档位，不支持宽高像素。取值 auto、1K、1.5K、2K、3K，默认 auto。auto 按底图和每个图层各自的原始尺寸处理：在 921600 到 4624220 之间保持原尺寸，小于 1K 抬到 1K，大于 2K 压到 2K，各自宽高比不变。"
     },
     {
      "key": "outputFormat",
@@ -11523,7 +11890,7 @@
      "key": "imageUrls",
      "type": "ARRAY",
      "itemType": "string",
-     "description": "参考图，1 到 16 张。添加顺序对应提示词里的图1、图2。",
+     "description": "参考图，1 到 16 张。添加顺序对应提示词里的图1、图2。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP, HEIC, HEIF.",
      "required": true
     },
     {
@@ -11644,7 +12011,7 @@
      "key": "imageUrls",
      "type": "ARRAY",
      "itemType": "string",
-     "description": "参考图，1 到 16 张。添加顺序对应提示词里的图1、图2。",
+     "description": "参考图，1 到 16 张。添加顺序对应提示词里的图1、图2。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP, HEIC, HEIF.",
      "required": true
     },
     {
@@ -11849,7 +12216,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 5,
-     "maxLength": 5000,
      "description": "编辑或融合指令",
      "required": true
     },
@@ -11915,7 +12281,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 0,
-     "maxLength": 2000,
      "description": "可选。描述要拆出的元素；留空则自动识别主要元素"
     },
     {
@@ -11956,7 +12321,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 5,
-     "maxLength": 5000,
      "description": "用于生成图片的提示词",
      "required": true
     },
@@ -14637,6 +15001,164 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-498427807"
   },
   {
+   "endpoint": "kling-v4/image",
+   "title": "Kling V4 图片生成",
+   "task": "reference-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "",
+   "description": "Kling V4 图片生成面向海报、角色设定和成套视觉，把文生图、参考图改图和系列组图放在同一次调用里。标准模式一次可出 1 到 9 张 2K 或 4K PNG，组图模式则一次生成 2 到 4 张风格统一的系列图。最多带入 10 张参考图，提示词用 @Image1、@Image2 按上传顺序点名，画幅可选自动或八种常用比例。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 21000,
+     "description": "画面描述，不能为空。纯中文约 21000 字，纯英文上游可到 50000 字，中英混合按比例折算。参考图用 @Image1、@Image2 按数组顺序点名。",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，0 到 10 张，可留空。支持 JPG、JPEG、PNG、GIF，单张不超过 30MB，宽高都不小于 300 像素，宽高比在 2:5 到 5:2 之间。每张参考图单独计费，和出图张数无关。\n\n支持的文件格式：JPG, JPEG, PNG, GIF."
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "auto",
+      "16:9",
+      "9:16",
+      "1:1",
+      "4:3",
+      "3:4",
+      "3:2",
+      "2:3",
+      "21:9"
+     ],
+     "default": "auto",
+     "description": "输出画幅。auto 按提示词或参考图决定比例。不支持像素尺寸。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "2k",
+      "4k"
+     ],
+     "default": "2k",
+     "description": "必填，输出分辨率，默认选 2k。只支持 2k 和 4k，不支持 8k。按张计费，4k 比 2k 更贵。",
+     "required": true
+    },
+    {
+     "key": "n",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "标准出图张数，1 到 9，默认 1。组图模式必须保持 1，张数改由 maxImages 决定；大于 1 时不能开组图。"
+    },
+    {
+     "key": "sequentialImageGeneration",
+     "type": "LIST",
+     "options": [
+      "disabled",
+      "auto"
+     ],
+     "default": "disabled",
+     "description": "必填。disabled 是标准出图，输出费按 n 张计。auto 是组图，一次生成风格相关的 2 到 4 张，此时必须填写 maxImages，且 n 保持 1，输出费按 maxImages 张计。",
+     "required": true
+    },
+    {
+     "key": "maxImages",
+     "type": "LIST",
+     "options": [
+      "2",
+      "3",
+      "4"
+     ],
+     "description": "组图张数，只能是 2、3 或 4。只在 sequentialImageGeneration 为 auto 时填写，输出费按这个张数计。漏填时按 1 张计。标准出图留空。"
+    },
+    {
+     "key": "nsfwCheck",
+     "type": "BOOL",
+     "default": false,
+     "description": "提交前是否审核提示词和参考图。默认关闭。打开后增加审核耗时，不改变出图单价。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-540073222"
+  },
+  {
+   "endpoint": "kling-v4/long-image",
+   "title": "Kling V4 长图生成",
+   "task": "reference-to-image",
+   "outputType": "image",
+   "category": "图像生成与处理",
+   "vendor": "",
+   "description": "Kling V4 长图生成每次只出一张整页 PNG，用来做商品详情页或网页设计稿。电商详情可上传 1 到 3 张商品图，并按短、中、长三档控制篇幅；网页设计可以只写提示词，也可以各带一张风格图和一张主体图。输出宽度分 1K 与 2K，高度随版面内容拉长，适合详情页和落地页视觉稿。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 71000,
+     "description": "版面、分区、文案和风格描述，不能为空。纯中文约 71000 字，纯英文上游可到 166000 字。电商按商品图顺序用 @Image1 起；网页设计里风格图是 @Image1，主体图是 @Image2。",
+     "required": true
+    },
+    {
+     "key": "skill",
+     "type": "LIST",
+     "options": [
+      "ecommerce",
+      "webpage"
+     ],
+     "default": "ecommerce",
+     "description": "ecommerce 是电商详情，必须配商品图，可选篇幅。webpage 是网页设计，不要传商品图和篇幅，风格图与主体图可选。两种模式不能混用字段。",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "仅电商详情使用，1 到 3 张商品图。支持 JPG、JPEG、PNG，单张不超过 30MB，宽高都不小于 300 像素，宽高比在 2:5 到 5:2。网页设计不要上传，否则上游直接拒绝。每张都计输入费。\n\n支持的文件格式：JPG, JPEG, PNG."
+    },
+    {
+     "key": "imageWithRoles",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "仅网页设计使用，最多一张风格图和一张主体图，都可以不传。电商详情不要填写。提示词按先风格后主体编号：两张都传时风格图是 @Image1、主体图是 @Image2，只传一张时那张就是 @Image1。每张都计输入费。"
+    },
+    {
+     "key": "length",
+     "type": "LIST",
+     "options": [
+      "none",
+      "short",
+      "medium",
+      "long"
+     ],
+     "default": "none",
+     "description": "必填。网页设计选不指定，这个值不会传给上游。电商选短篇、中篇或长篇；选不指定时上游按中篇生成，售价也按中篇。短篇约 2 到 5 个区块，中篇约 6 到 10 个，长篇约 11 到 18 个。",
+     "required": true
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1k",
+      "2k"
+     ],
+     "default": "1k",
+     "description": "必填，输出宽度档位，默认选 1k。1k 宽 1024，2k 宽 2048，高度随内容变化。不支持 4k。和篇幅一起决定输出单价。",
+     "required": true
+    },
+    {
+     "key": "nsfwCheck",
+     "type": "BOOL",
+     "default": false,
+     "description": "提交前是否审核提示词和参考图。默认关闭。打开后增加审核耗时，不改变长图单价。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-540073221"
+  },
+  {
    "endpoint": "vidu/reference-to-video-q2-pro",
    "title": "Vidu-参考生视频-q2-pro",
    "task": "reference-to-image",
@@ -15448,12 +15970,13 @@
       "480p",
       "720p",
       "native1080p",
+      "native4k",
       "1080p",
       "2k",
       "4k"
      ],
      "default": "720p",
-     "description": "视频分辨率。分为模型原生输出的分辨率（480p、720p、native1080p），与基于 720p 原生生成后进行超分放大的分辨率（1080p、2k、4k）。",
+     "description": "视频分辨率。分为模型原生输出的分辨率（480p、720p、native1080p、native4k），与基于 720p 原生生成后进行超分放大的分辨率（1080p、2k、4k）。",
      "required": true
     },
     {
@@ -16980,6 +17503,84 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183127"
   },
   {
+   "endpoint": "sand-ai/magi-2/reference-to-video",
+   "title": "MAGI-2 参考生视频",
+   "task": "reference-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "",
+   "description": "MAGI-2 参考生视频用必填提示词结合参考素材生成带声音的 1080p 成片。提示词 1 到 15000 字。参考图最多 10 张，参考视频和音频各最多 5 段，图片、视频、音频可以各自为空，但至少提供一类。单段视频和音频各自 2 到 30 秒，两类各自合计不超过 30 秒。输出时长 4 到 30 秒，音效包含在按时长计费里。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "maxLength": 15000,
+     "description": "画面描述，1 到 15000 字。必填。",
+     "required": true
+    },
+    {
+     "key": "imageUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考图，0 到 10 张。单张不超过 30MB，支持 JPG、JPEG、PNG、WEBP、GIF、BMP、TIFF、HEIC、HEIF。图、视频、音频至少提供一类。\n\n支持的文件格式：JPG, JPEG, PNG, WEBP, GIF, BMP, TIFF, HEIC, HEIF."
+    },
+    {
+     "key": "videoUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考视频，0 到 5 段。MP4 或 MOV，单段不超过 200MB，每段 2 到 30 秒，合计不超过 30 秒。\n\n支持的文件格式：MP4, MOV."
+    },
+    {
+     "key": "audioUrls",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考音频，0 到 5 段。MP3 或 WAV，单段不超过 15MB，每段 2 到 30 秒，合计不超过 30 秒。\n\n支持的文件格式：MP3, WAV."
+    },
+    {
+     "key": "duration",
+     "type": "NUMBER",
+     "default": 5,
+     "description": "视频时长，4 到 30 秒，默认 5 秒。售价按这个秒数计算。",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "21:9",
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16"
+     ],
+     "default": "16:9",
+     "description": "画面比例，默认 16:9。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1080p"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率。目前只有 1080p。"
+    },
+    {
+     "key": "generateAudio",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成音效。默认开启，费用已包含在按时长计费里。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "description": "随机种子，0 到 4294967295 的整数；传 -1 或留空则由上游随机。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-541630253"
+  },
+  {
    "endpoint": "seedance-v1-lite/reference-to-video",
    "title": "seedance-v1-lite-reference-to-video",
    "task": "reference-to-video",
@@ -17696,6 +18297,95 @@
     }
    ],
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183187"
+  },
+  {
+   "endpoint": "alibaba/qwen-audio-3.1-tts-next",
+   "title": "千问音频3.1-语音合成-Next",
+   "task": "text-to-audio",
+   "outputType": "audio",
+   "category": "音频生成与处理",
+   "vendor": "",
+   "description": "千问音频 3.1 TTS Next 是统一音频生成模型，不只做单人朗读。它根据文本和最多三段参考音频，一次生成人声、多人对话、播客或环境声景。提示词用 @voice1、@voice2、@voice3 按顺序引用参考音频。按输入和输出 Token 计费。",
+   "params": [
+    {
+     "key": "text",
+     "type": "STRING",
+     "maxLength": 3000,
+     "description": "音频描述或待合成文本，最长 3000 字符。参考音频按顺序写成 @voice1、@voice2、@voice3。不传参考音频时只按文本生成。播客场景单次最长 240 秒，其他场景最长 120 秒。按输入和输出 Token 计费。",
+     "required": true
+    },
+    {
+     "key": "references",
+     "type": "ARRAY",
+     "itemType": "string",
+     "description": "参考音频，0 到 3 条。每条最长 30 秒、不超过 10MB，支持 wav、mp3、ogg。顺序对应提示词里的 @voice1、@voice2、@voice3。不支持系统音色 ID。"
+    },
+    {
+     "key": "format",
+     "type": "LIST",
+     "options": [
+      "wav",
+      "mp3",
+      "pcm"
+     ],
+     "default": "wav",
+     "description": "音频编码格式，默认 wav。"
+    },
+    {
+     "key": "sampleRate",
+     "type": "LIST",
+     "options": [
+      "8000",
+      "16000",
+      "24000",
+      "44100",
+      "48000"
+     ],
+     "default": "48000",
+     "description": "采样率（Hz），默认 48000。不支持 opus 输出。"
+    },
+    {
+     "key": "channels",
+     "type": "LIST",
+     "options": [
+      "1",
+      "2"
+     ],
+     "default": "2",
+     "description": "声道数。1 为单声道，2 为双声道，默认 2。"
+    },
+    {
+     "key": "volume",
+     "type": "NUMBER",
+     "default": 50,
+     "description": "音量，0 到 100，默认 50。"
+    },
+    {
+     "key": "rate",
+     "type": "NUMBER",
+     "default": 1,
+     "description": "语速，0.5 到 2.0，默认 1.0。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "default": 42,
+     "description": "随机种子，默认 42。"
+    },
+    {
+     "key": "enableCbr",
+     "type": "BOOL",
+     "default": false,
+     "description": "仅 mp3 生效。打开后为恒定码率，关闭为可变码率。码率和 VBR 质量使用阿里默认值（128 kbps / quality 5），此处不下发。"
+    },
+    {
+     "key": "enableAigcTag",
+     "type": "BOOL",
+     "default": false,
+     "description": "是否在生成音频中写入 AIGC 标识。默认关闭。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-539710090"
   },
   {
    "endpoint": "alibaba/qwen3-tts-flash",
@@ -21703,7 +22393,6 @@
      "key": "prompt",
      "type": "STRING",
      "minLength": 5,
-     "maxLength": 5000,
      "description": "prompt",
      "required": true
     },
@@ -21749,13 +22438,12 @@
    "outputType": "image",
    "category": "图像生成与处理",
    "vendor": "seedream",
-   "description": "Seedream 5.5 文生图只提交提示词生成单张图片。分辨率支持 1K、1.5K、2K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
+   "description": "Seedream 5.5 文生图只提交提示词生成单张图片。分辨率支持 1K、1.5K、2K、3K，也可改用宽高像素。背景可选 auto、transparent、opaque。jpeg 不能配 transparent，jpeg 配 auto 输出不透明图。水印默认关闭。提示词优化只支持 standard。不支持组图和联网搜索。",
    "params": [
     {
      "key": "prompt",
      "type": "STRING",
      "minLength": 5,
-     "maxLength": 5000,
      "description": "用于生成图片的提示词",
      "required": true
     },
@@ -21777,10 +22465,11 @@
      "options": [
       "1K",
       "1.5K",
-      "2K"
+      "2K",
+      "3K"
      ],
      "default": "2K",
-     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K，默认 2K。"
+     "description": "优先级高于 width 与 height。传入后不再使用宽高像素。取值 1K、1.5K、2K、3K，默认 2K。"
     },
     {
      "key": "outputFormat",
@@ -23588,12 +24277,13 @@
       "480p",
       "720p",
       "native1080p",
+      "native4k",
       "1080p",
       "2k",
       "4k"
      ],
      "default": "720p",
-     "description": "视频分辨率。分为模型原生输出的分辨率（480p、720p、native1080p），与基于 720p 原生生成后进行超分放大的分辨率（1080p、2k、4k）。",
+     "description": "视频分辨率。分为模型原生输出的分辨率（480p、720p、native1080p、native4k），与基于 720p 原生生成后进行超分放大的分辨率（1080p、2k、4k）。",
      "required": true
     },
     {
@@ -26421,6 +27111,67 @@
    "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-448183150"
   },
   {
+   "endpoint": "sand-ai/magi-2/text-to-video",
+   "title": "MAGI-2 文生视频",
+   "task": "text-to-video",
+   "outputType": "video",
+   "category": "视频生成与处理",
+   "vendor": "MAGI",
+   "description": "MAGI-2 文生视频面向要直接出片的创意流程，把一段提示词生成带声音的 1080p 视频。它适合广告镜头、故事短片和概念预览，画面按提示词里的主体、场景和运镜来组织。时长可以在 4 秒到 30 秒之间按秒选择，画幅覆盖 21:9、16:9、4:3、1:1、3:4 和 9:16。成片音效包含在按时长计费里，不另收费。提示词最长一万五千字，默认 5 秒、16:9、1080p。",
+   "params": [
+    {
+     "key": "prompt",
+     "type": "STRING",
+     "minLength": 1,
+     "maxLength": 15000,
+     "description": "画面描述，1 到 15000 字。",
+     "required": true
+    },
+    {
+     "key": "duration",
+     "type": "NUMBER",
+     "default": 10,
+     "description": "视频时长，4 到 30 秒，默认 5 秒。售价按这个秒数计算。",
+     "required": true
+    },
+    {
+     "key": "aspectRatio",
+     "type": "LIST",
+     "options": [
+      "21:9",
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16"
+     ],
+     "default": "16:9",
+     "description": "画面比例，默认 16:9。"
+    },
+    {
+     "key": "resolution",
+     "type": "LIST",
+     "options": [
+      "1080p"
+     ],
+     "default": "1080p",
+     "description": "输出分辨率。目前只有 1080p。"
+    },
+    {
+     "key": "generateAudio",
+     "type": "BOOL",
+     "default": true,
+     "description": "是否生成音效。默认开启，费用已包含在按时长计费里。"
+    },
+    {
+     "key": "seed",
+     "type": "NUMBER",
+     "description": "随机种子，0 到 4294967295 的整数；传 -1 或留空则由上游随机。"
+    }
+   ],
+   "docUrl": "https://www.runninghub.cn/runninghub-api-doc-cn/api-541630251"
+  },
+  {
    "endpoint": "seedance-v1.5-pro/text-to-video",
    "title": "seedance-v1.5-pro-text-to-video",
    "task": "text-to-video",
@@ -27156,10 +27907,11 @@
      "key": "resolution",
      "type": "LIST",
      "options": [
-      "native1080p"
+      "native1080p",
+      "native4k"
      ],
      "default": "native1080p",
-     "description": "成片分辨率。模型原生直出。",
+     "description": "成片分辨率，可选 native1080p、native4k。模型原生直出。",
      "required": true
     },
     {
